@@ -2,7 +2,7 @@ import HttpApp from './lib/http.js';
 import SocketApp from './lib/socket.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
-import HttpRouter from './lib/http-router.js';
+import Router from './lib/router.js';
 //system context
 let context = {
   opts: {
@@ -18,7 +18,7 @@ export default async function boot(args){
     .then(HttpApp)
     .then(SocketApp)
     .then(SystemEvents)
-    .then(HttpRouter);
+    .then(Router);
   const { net: { app, _httpServer }, opts  } = context;
   if(!opts.port) throw `Invalid server port [port] = ${opts.port}.`;
   _httpServer.listen(opts.port, () => {
