@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "deba-kernel",
+  "name": "deba-kerneljs",
   "version": "1.0.0",
-  "description": "DEBA Business Kernel",
+  "description": "DEBA Business Kernel JS",
   "main": "index.js",
   "scripts": {
     "start": "nodemon test.js"
