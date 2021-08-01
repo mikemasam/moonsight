@@ -13,19 +13,18 @@ let context = {
   } 
 };
 
-export default async function boot(opts){
-  context = await Enviroment(context, opts)
+export default async function boot(args){
+  context = await Enviroment(context, args)
     .then(HttpApp)
     .then(SocketApp)
     .then(SystemEvents)
     .then(HttpRouter);
-  const { net: { app, _httpServer }, opts: { api, port }  } = context;
-  if(!port) throw `Invalid server port [port] = ${port}.`;
-  _httpServer.listen(process.env.HTTP_PORT, () => {
-    console.log(`http listening on http://localhost:${process.env.HTTP_PORT}/`)
+  const { net: { app, _httpServer }, opts  } = context;
+  if(!opts.port) throw `Invalid server port [port] = ${opts.port}.`;
+  _httpServer.listen(opts.port, () => {
+    console.log(`http listening on http://localhost:${opts.port}/`)
   });
   //console.log(app._router.stack);
   return context;
 }
 
-boot({}).catch(console.log);
