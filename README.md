@@ -1,10 +1,31 @@
-### API
-`
+# API
+
+### Kernel opts
+```
 {
-  apiPath: > Http routes directory,
+  apiPath: '',
+  port: PORT,
   logging: {
-    http: > Boolean,
-    error: > Boolean
+    error: true,
+    http: true
   }
 }
-`
+```
+
+### Kernel init
+```
+const cxt = await Kernel(opts);
+```
+
+### Responses
+- #### Basic Response
+  - ``` Response(data, { message = '', status = 200 }); ```
+- #### Not Found Response
+  - ``` NotFound({ message = '' }); ```
+- #### Paginated Response
+  - ``` PaginatedResponse(data, { message = 'success', status = 200 }) ```
+- #### Unhandled Response
+  - ``` UnhandledReponse(err) ```
+- #### Empty Response
+  - ``` EmptyResponse(); ```
+
