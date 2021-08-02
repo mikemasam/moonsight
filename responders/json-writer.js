@@ -1,5 +1,6 @@
 export default (data, logs = {}) => {
   async function ReponseWriter (log, req, res){
+    if(!log || !req || !res) throw "Response writer missing required argument.";
     res.json(data);
     log.method =  req.method;
     log.ip = req.ip;
