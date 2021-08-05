@@ -1,7 +1,8 @@
 export default (data, logs = {}) => {
   async function ReponseWriter (log, req, res){
     if(!log || !req || !res) throw "Response writer missing required argument.";
-    res.json(data);
+    if(data?.success !== undefined) throw "Response writer is using [success] param for client status check, remove the parameter";
+    res.json({ ...data, success: data?.status == 200 });
     log.method =  req.method;
     log.ip = req.ip;
     log.url = req.originalUrl;
