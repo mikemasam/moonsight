@@ -3,7 +3,11 @@ import SocketApp from './lib/socket.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
 import Router from './lib/router.js';
-import { UnhandledReponse, NotFound, PaginatedResponse, Response, EmptyResponse } from './responders/index.js';
+import { 
+  UnhandledReponse, NotFound, 
+  PaginatedResponse, Response, 
+  FailedResponse, EmptyResponse 
+} from './responders/index.js';
 
 //system context
 let context = {
@@ -22,12 +26,12 @@ export default async function boot(args){
     .then(SystemEvents)
     .then(Router);
   const { net: { app, _httpServer }, opts  } = context;
-  if(!opts.port) throw `Invalid server port [port] = ${opts.port}.`;
+  if(!opts.port) throw `[KernelJs] Invalid server port [port] = ${opts.port}.`;
   _httpServer.listen(opts.port, () => {
-    console.log(`http listening on http://localhost:${opts.port}/`)
+    console.log(`[KernelJs] http listening on http://localhost:${opts.port}/`)
   });
   //console.log(app._router.stack);
   return context;
 }
 
-export { UnhandledReponse, NotFound, PaginatedResponse, Response, EmptyResponse }
+export { UnhandledReponse, NotFound, PaginatedResponse, Response, EmptyResponse, FailedResponse }
