@@ -1,4 +1,7 @@
+import { IHttp } from '../../handlers/index.js';
 export default async (ctx) => {
-  return async () => {
-  }
 }
+
+export const ihttp = IHttp(async () => {
+  throw "i";
+},[]);

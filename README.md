@@ -17,6 +17,13 @@
 const cxt = await Kernel(opts);
 ```
 
+### Handlers
+- #### Http
+  - ``` export const ihttp = IHttp(handler, middlewares) ```
+- #### Socket 
+  - ``` export const isocket = ISocket(handler, middlewares) ```
+- #### Kernel core
+  - ``` export const ikernel = IKernel(handler, middlewares) ```
 ### Responses
 - #### Basic Response
   - ``` Response(data, { message = '', status = 200 }); ```

@@ -2,12 +2,14 @@ import HttpApp from './lib/http.js';
 import SocketApp from './lib/socket.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
-import Router from './lib/router.js';
+import Router from './lib/router/index.js';
 import { 
   UnhandledReponse, NotFound, 
   PaginatedResponse, Response, 
   FailedResponse, EmptyResponse 
 } from './responders/index.js';
+
+import { IHttp } from './handlers/index.js';
 
 //system context
 let context = {
@@ -34,4 +36,4 @@ export default async function boot(args){
   return context;
 }
 
-export { UnhandledReponse, NotFound, PaginatedResponse, Response, EmptyResponse, FailedResponse }
+export { UnhandledReponse, NotFound, PaginatedResponse, Response, EmptyResponse, FailedResponse, IHttp }

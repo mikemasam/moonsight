@@ -1,8 +1,7 @@
 import { Response } from '../responders/index.js';
-export default async (ctx) => {
-  return async () => {
-    return Response({ name: 'this is a name' });
-  }
+import { IHttp } from '../handlers/index.js';
+const http = async () => {
+  return Response({ name: 'this is a name' });
 }
 
-export const middleware = ['auth'];
+export const ihttp = IHttp(http, []);
