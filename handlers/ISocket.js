@@ -1,11 +1,11 @@
 import { NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
-const AsyncFn = (async () => {}).constructor;
 
-export default function IHttp(handler, middlewares){
+export default function ISocket(handler, middlewares){
+  function ISocketHandler(ctx, stat){
 
-  function IHttpHandler(ctx, stat){
+    const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
+      throw `[Router] ~ ${stat._fullPath} ISocket async handler function is required.`;
 
     return [(req, res) => {
       const log = {
@@ -16,11 +16,13 @@ export default function IHttp(handler, middlewares){
       handler(req, res)
         .then(_r => _r?.responder ? _r : EmptyResponse())
         .catch(_r => _r?.responder ? _r : UnhandledReponse(_r))
-        .then(_r => _r(log, req, res));
+        .then(_r => {
+          return _r(log, req, res);
+        });
     }, middlewares];
   };
 
-  IHttpHandler.__ihandler = true;
-  return IHttpHandler;
+  ISocketHandler.__ihandler = true;
+  return ISocketHandler;
 }
 

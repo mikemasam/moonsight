@@ -1,11 +1,10 @@
 import { NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
-const AsyncFn = (async () => {}).constructor;
+export default function ICore(handler, middlewares){
+  function ICoreHandler(ctx, stat){
 
-export default function IHttp(handler, middlewares){
-
-  function IHttpHandler(ctx, stat){
+    const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
+      throw `[Router] ~ ${stat._fullPath} ICore async handler function is required.`;
 
     return [(req, res) => {
       const log = {
@@ -20,7 +19,7 @@ export default function IHttp(handler, middlewares){
     }, middlewares];
   };
 
-  IHttpHandler.__ihandler = true;
-  return IHttpHandler;
+  ICoreHandler.__ihandler = true;
+  return ICoreHandler;
 }
 
