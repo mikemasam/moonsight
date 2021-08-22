@@ -6,9 +6,9 @@ const kernel = await Kernel({
   middlewares: path.resolve('middlewares'),
   apiMount: 'api',
   channelName: 'test',
-  coreHost: 'http://localhost:3003',
+  //coreHost: 'http://localhost:3003',
   mountCore: {
-    allowedIPs: '127.0.0.1, 0.0.0.0'
+    allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
   },
   connectCore: true,
   logging: {

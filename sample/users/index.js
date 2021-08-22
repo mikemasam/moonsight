@@ -3,7 +3,7 @@ import { Response } from '../../responders/index.js';
 import { CoreNet } from '../../lib/corenet/index.js';
 
 export const isocket = ISocket(async ({ socket, body, user, business, device }) => {
-  //console.log(body);
+  console.log(":api:users: isocket body", body);
   return Response({ name: "this is name " });
 }, ['socket.auth']);
 

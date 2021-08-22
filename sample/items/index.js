@@ -7,14 +7,14 @@ export const ihttp = IHttp(async () => {
 },[]);
 
 export const isocket = ISocket(async ({ socket, body, user, business, device }) => {
-  //console.log(body);
+  console.log("testing ....", body);
   const res = await CoreNet.select('test').query(':api:users', { id: "" });
   console.log('response = ', res);
   return Response({ name: "this is name " });
 }, ['socket.auth']);
 
 export const icore = ICore(async ({ socket, body, device }) => {
-  //console.log(body);
+  console.log("testing ....", body);
   const res = await CoreNet.select('test').query(':api:users', { id: "" });
   console.log('response = ', res);
   return Response({ name: "this is name " });
