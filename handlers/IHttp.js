@@ -20,7 +20,7 @@ export default function IHttp(handler, middlewares){
     }, middlewares];
   };
 
-  IHttpHandler.__ihandler = true;
+  IHttpHandler.__ihandler = 'ihttp';
   return IHttpHandler;
 }
 

@@ -10,12 +10,13 @@ const kernel = await Kernel({
   mountCore: {
     allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
   },
-  connectCore: true,
   logging: {
-    http: true,
+    http: false,
+    core: true,
+    socket: true,
     error: true
   }
-}).catch(console.log);
+}).catch(console.error);
 
 //console.log(Object.keys(kernel));
 /*
@@ -23,7 +24,7 @@ const isocket = ISocket(({ socket, data, user, business, device }) => {
   return Response({});
 }, ['auth', '']);
 */
-const { socketIO } = kernel.net;
+//const { socketIO } = kernel.net;
 
 /*
 socketIO.on("connection", socket => {

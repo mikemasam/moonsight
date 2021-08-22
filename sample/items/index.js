@@ -6,7 +6,7 @@ export const ihttp = IHttp(async () => {
   throw "i";
 },[]);
 
-export const isocket = ISocket(async ({ socket, body, user, business, device }) => {
+export const mobileitems = ISocket(async ({ socket, body, user, business, device }) => {
   console.log("testing ....", body);
   const res = await CoreNet.select('test').query(':api:users', { id: "" });
   console.log('response = ', res);

@@ -19,7 +19,7 @@ export default function ICore(handler, middlewares){
     }, middlewares];
   };
 
-  ICoreHandler.__ihandler = true;
+  ICoreHandler.__ihandler = 'icore';
   return ICoreHandler;
 }
 

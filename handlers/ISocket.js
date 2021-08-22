@@ -22,7 +22,7 @@ export default function ISocket(handler, middlewares){
     }, middlewares];
   };
 
-  ISocketHandler.__ihandler = true;
+  ISocketHandler.__ihandler = 'isocket';
   return ISocketHandler;
 }
 

@@ -18,7 +18,13 @@ let context = {
     apiPath: '',
     apiMiddlewares: null,
     port: null,
-    mountCore: false
+    mountCore: false,
+    logging: {
+      http: false,
+      core: false,
+      socket: false,
+      error: false 
+    }
   },
   net: {
     httpServer: null,
@@ -39,7 +45,7 @@ export default async function boot(args){
   const { events, net: { app, httpServer }, opts  } = context;
   if(!opts.port) throw `[KernelJs] Invalid server port [port] = ${opts.port}.`;
   httpServer.listen(opts.port, '0.0.0.0', () => {
-    console.log(`[KernelJs] ~ started on [ SOCKET, NETCORE, HTTP, PORT:${opts.port} ]`)
+    console.log(`[KernelJs] ~ started on host:${opts.port}`)
     events.emit('kernel.ready');
   });
   //console.log(app._router.stack);
