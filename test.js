@@ -3,8 +3,8 @@ import path from 'path';
 const kernel = await Kernel({
   port: 3003,
   apiPath: path.resolve('sample'),
-  middlewares: path.resolve('middlewares'),
   apiMount: 'api',
+  middlewares: path.resolve('middlewares'),
   channelName: 'test',
   //coreHost: 'http://localhost:3003',
   mountCore: {
