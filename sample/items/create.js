@@ -1,6 +1,6 @@
-import { ISocket, IHttp, ICore } from '../handlers/index.js';
-import { Response } from '../responders/index.js';
-import { CoreNet } from '../lib/corenet/index.js';
+import { ISocket, IHttp, ICore } from '../../handlers/index.js';
+import { Response } from '../../responders/index.js';
+import { CoreNet } from '../../lib/corenet/index.js';
 
 export const ihttp = IHttp(async (req) => {
   console.log(req.params);

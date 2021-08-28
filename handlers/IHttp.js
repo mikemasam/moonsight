@@ -8,10 +8,12 @@ export default function IHttp(handler, middlewares){
       throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
 
     return [(req, res) => {
+      const _runtime = req.__kernel_runtime;
+      const startTime =  _runtime ? _runtime.startTime : Date.now();
       const log = {
         path: stat._location,
         ctx,
-        startTime: Date.now(),
+        startTime
       };
       handler(req, res)
         .then(_r => _r?.responder ? _r : EmptyResponse())
