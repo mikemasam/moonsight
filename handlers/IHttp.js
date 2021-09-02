@@ -8,12 +8,14 @@ export default function IHttp(handler, middlewares){
       throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
 
     return [(req, res) => {
-      const _runtime = req.__kernel_runtime;
-      const startTime =  _runtime ? _runtime.startTime : Date.now();
+      //TODO: use locals:_lifetime for context & stat & startTime
+      if(!req.locals?._lifetime?.startTime) 
+        throw `[Router] ~ ${stat._fullPath} req.locals modification is not permitted.`;
+      const { _lifetime } = req.locals;
       const log = {
         path: stat._location,
         ctx,
-        startTime
+        startTime: _lifetime.startTime
       };
       handler(req, res)
         .then(_r => _r?.responder ? _r : EmptyResponse())

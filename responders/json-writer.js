@@ -1,5 +1,6 @@
 export default (data = {}, logs = {}) => {
   async function ReponseWriter (log, req, res){
+    //TODO: use locals:_lifetime for context & stat & startTime
     if(!log || !req) throw "Response writer missing required argument.";
     if(!data) data = {};
     if(data?.success !== undefined) throw "Response writer is using [success] param for client status check, remove the parameter";
