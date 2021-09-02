@@ -3,9 +3,16 @@ export default (data = {}, logs = {}) => {
     //TODO: use locals:_lifetime for context & stat & startTime
     if(!log || !req) throw "Response writer missing required argument.";
     if(!data) data = {};
+
+    if(req?.locals?.data){
+      data = {
+        ...data,
+        ...req.locals.data
+      }
+    }
+
     if(data?.success !== undefined)
       throw "Response writer is using [success] param for client status check, remove the parameter";
-    if(req.locals) data.page = req.locals.page;
     if(!isString(data.message)) data.message = "Result";
     log.method =  req.method;
     log.ip = req.ip;
