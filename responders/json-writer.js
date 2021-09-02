@@ -4,8 +4,14 @@ export default (data = {}, logs = {}) => {
     if(!log || !req) throw "Response writer missing required argument.";
     if(!data) data = {};
     if(data?.success !== undefined) throw "Response writer is using [success] param for client status check, remove the parameter";
+    if(!req.locals) throw `[Router] ~ ${req.originalUrl} req.locals modification is not permitted.`;
+
+
+    const { page } = req.locals;
+    if(page) data.page = page;
+
     if(!isString(data.message)) data.message = "Result";
-      log.method =  req.method;
+    log.method =  req.method;
     log.ip = req.ip;
     log.url = req.originalUrl;
     log.status = data.status || 0;
@@ -35,3 +41,5 @@ const logRequest = async (log) => {
 function isString(x) {
   return Object.prototype.toString.call(x) === "[object String]"
 }
+
+
