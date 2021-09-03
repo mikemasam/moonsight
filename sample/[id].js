@@ -1,12 +1,12 @@
 import { ISocket, IHttp, ICore } from '../handlers/index.js';
-import { Response } from '../responders/index.js';
+import { Response, PaginatedResponse } from '../responders/index.js';
 import { CoreNet } from '../lib/corenet/index.js';
 
 export const ihttp = IHttp(async (req) => {
   console.log(req.params);
   console.log(req.query);
-  return Response({ name: "this is name " });
-},[]);
+  return PaginatedResponse({ results: [], total: 10 });
+},['http.auth']);
 
 export const mobileitems = ISocket(async ({ socket, body, user, business, device }) => {
   console.log("testing ....", body);
