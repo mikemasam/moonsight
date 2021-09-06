@@ -6,6 +6,7 @@ export default async (ctx, req, res, addHook) => {
 
 const paginationHook = async (data) => {
   return {
+    data: data.results,
     page: {
       page: 1, 
       pageSize: 2,

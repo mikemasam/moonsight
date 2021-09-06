@@ -55,7 +55,7 @@ export default async function boot(args){
 export { 
   UnhandledReponse, 
   NotFound, 
-  PaginatedResponse, 
+  //PaginatedResponse, 
   Response, 
   EmptyResponse, 
   FailedResponse, 

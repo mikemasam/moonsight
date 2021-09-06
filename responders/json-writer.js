@@ -1,15 +1,14 @@
-export default (data = {}, logs = {}, rawData = () => { }) => {
+export default (data = {}, logs = {}, rawData = {}) => {
   async function ReponseWriter (log, req, res){
     //TODO: use locals:_lifetime for context & stat & startTime
     if(!log || !req) throw "Response writer missing required argument.";
     if(!data) data = {};
 
     if(res.__locals){
-      let hooks = res.__locals.hooks;
+      let hooks = res.__locals.hooks.reverse();
       while(hooks.length){
         const hook = hooks.pop();
         const changes = await hook(rawData);
-        if(changes?.data) throw "Response writer is using [data] param for client response, remove the parameter from middleware hooks.";
         data = {
           ...data,
           ...changes

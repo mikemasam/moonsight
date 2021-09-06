@@ -5,7 +5,7 @@ import { CoreNet } from '../lib/corenet/index.js';
 export const ihttp = IHttp(async (req) => {
   console.log(req.params);
   console.log(req.query);
-  return PaginatedResponse({ results: [], total: 10 });
+  return Response({ results: [1, 2, 3, 4, 5], total: 10 });
 },['http.auth']);
 
 export const mobileitems = ISocket(async ({ socket, body, user, business, device }) => {
