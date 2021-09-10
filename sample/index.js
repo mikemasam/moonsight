@@ -12,3 +12,4 @@ export const isocket = ISocket(async ({ socket, body, user, business, device }) 
   //console.log(body);
   return Response({ name: "this is name " });
 }, ['socket.auth']);
+

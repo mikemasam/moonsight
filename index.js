@@ -7,7 +7,8 @@ import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
   UnhandledReponse, NotFound, 
   PaginatedResponse, Response, 
-  FailedResponse, EmptyResponse 
+  FailedResponse, EmptyResponse,
+  Request
 } from './responders/index.js';
 
 import { IHttp, ISocket, ICore } from './handlers/index.js';
@@ -62,5 +63,6 @@ export {
   IHttp,
   ISocket,
   ICore,
-  CoreNet
+  CoreNet,
+  Request
 }
