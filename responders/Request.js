@@ -26,6 +26,6 @@ class RequestState{
 }
 
 
-export default CreateRequestState(req){
+export default function CreateRequestState(req){
   return new RequestState(req);
 }
