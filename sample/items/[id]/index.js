@@ -2,8 +2,12 @@ import { ISocket, IHttp, ICore } from '../../../handlers/index.js';
 import { Response } from '../../../responders/index.js';
 import { CoreNet } from '../../../lib/corenet/index.js';
 
+
+export default async function(ctx, { router, path }){
+  console.log(router, path);
+}
+
 export const ihttp = IHttp(async (req) => {
-  console.log(req.params);
   console.log(req.query);
   return Response({ name: "this is name " });
 },[]);
