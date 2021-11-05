@@ -8,7 +8,7 @@ import {
   UnhandledReponse, NotFound, 
   PaginatedResponse, Response, 
   FailedResponse, EmptyResponse,
-  Request
+  Request, NoResponse
 } from './responders/index.js';
 
 import { IHttp, ISocket, ICore } from './handlers/index.js';
@@ -64,5 +64,6 @@ export {
   ISocket,
   ICore,
   CoreNet,
-  Request
+  Request,
+  NoResponse
 }

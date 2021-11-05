@@ -5,5 +5,7 @@ import EmptyResponse from './EmptyResponse.js';
 import UnhandledReponse from './UnhandledReponse.js';
 import FailedResponse from './FailedResponse.js';
 import Request from './Request.js';
+import NoResponse from './NoResponse.js';
 
-export { Request, NotFound, PaginatedResponse, Response, FailedResponse, EmptyResponse, UnhandledReponse };
+
+export { Request, NotFound, PaginatedResponse, Response, FailedResponse, EmptyResponse, UnhandledReponse, NoResponse };

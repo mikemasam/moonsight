@@ -25,6 +25,8 @@ export default (data = {}, logs = {}, rawData = {}) => {
     log.status = data.status || 0;
     log.endTime = Date.now();
     logRequest({ ...log, ...logs});
+    if(data?.status === 0) return;
+
     if(res.json){
       res.json({ ...data, success: data?.status == 200 });
     }
