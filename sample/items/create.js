@@ -1,6 +1,10 @@
-import { ISocket, IHttp, ICore } from '../../handlers/index.js';
+import { IMount, ISocket, IHttp, ICore } from '../../handlers/index.js';
 import { Response } from '../../responders/index.js';
 import { CoreNet } from '../../lib/corenet/index.js';
+
+export const loader = IMount(async (a, { path }) => {
+  //console.log('loaded ===+++|||>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=> ', path);
+},[]);
 
 export const ihttp = IHttp(async (req) => {
   console.log(req.params);

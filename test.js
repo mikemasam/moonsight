@@ -11,9 +11,10 @@ const kernel = await Kernel({
     allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
   },
   logging: {
-    http: true,
+    //http: true,
     //core: true,
     //socket: true,
+    //loader: true,
     error: true
   }
 }).catch(console.error);

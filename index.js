@@ -11,7 +11,7 @@ import {
   Request, NoResponse
 } from './responders/index.js';
 
-import { IHttp, ISocket, ICore } from './handlers/index.js';
+import { IHttp, ISocket, ICore, IMount } from './handlers/index.js';
 
 //system context
 let context = {
@@ -24,6 +24,7 @@ let context = {
       http: false,
       core: false,
       socket: false,
+      loader: false,
       error: false 
     }
   },
@@ -63,7 +64,9 @@ export {
   IHttp,
   ISocket,
   ICore,
+  IMount,
   CoreNet,
   Request,
   NoResponse
 }
+
