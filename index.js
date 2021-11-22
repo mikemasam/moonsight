@@ -20,6 +20,7 @@ let context = {
     apiMiddlewares: null,
     port: null,
     mountCore: false,
+    settings: {},
     logging: {
       http: false,
       core: false,

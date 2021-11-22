@@ -1,4 +1,4 @@
-import { NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
+import { AppState, NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
 export default function ICore(handler, middlewares){
   function ICoreHandler(ctx, stat){
 
@@ -12,7 +12,7 @@ export default function ICore(handler, middlewares){
         ctx,
         startTime: Date.now(),
       };
-      handler(req, res)
+      handler(req, res, AppState(ctx))
         .then(_r => _r?.responder ? _r : EmptyResponse())
         .catch(_r => _r?.responder ? _r : UnhandledReponse(_r))
         .then(_r => _r(log, req, res));

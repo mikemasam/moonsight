@@ -6,6 +6,7 @@ import UnhandledReponse from './UnhandledReponse.js';
 import FailedResponse from './FailedResponse.js';
 import Request from './Request.js';
 import NoResponse from './NoResponse.js';
+import AppState from './AppState.js';
 
 
-export { Request, NotFound, PaginatedResponse, Response, FailedResponse, EmptyResponse, UnhandledReponse, NoResponse };
+export { AppState, Request, NotFound, PaginatedResponse, Response, FailedResponse, EmptyResponse, UnhandledReponse, NoResponse };

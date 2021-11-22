@@ -1,3 +1,4 @@
+
 export default function IMount(handler){
   function IMountHandler(ctx, stat){
     const AsyncFn = (async () => {}).constructor;

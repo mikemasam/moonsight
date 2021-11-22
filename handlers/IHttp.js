@@ -1,4 +1,4 @@
-import { NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
+import { AppState, NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
 const AsyncFn = (async () => {}).constructor;
 
 export default function IHttp(handler, middlewares){
@@ -14,7 +14,7 @@ export default function IHttp(handler, middlewares){
         ctx,
         startTime 
       };
-      handler(req, res)
+      handler(req, res, AppState(ctx))
         .then(_r => _r?.responder ? _r : EmptyResponse())
         .catch(_r => _r?.responder ? _r : UnhandledReponse(_r))
         .then(_r => _r(log, req, res));
