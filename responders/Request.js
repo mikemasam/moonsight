@@ -1,4 +1,4 @@
-class RequestState{
+class RequestState {
   constructor(req){
     this.req = req;
   }
