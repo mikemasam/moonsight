@@ -14,6 +14,12 @@ class AppState {
   put(name, data){
     this.ctx.opts.settings[name] = data;
   }
+  push(name, data){
+    this.ctx.opts.settings[name]?.push(data);
+  }
+  remove(name, index){
+    this.ctx.opts.settings[name]?.splice(index, 1);
+  }
 }
 
 
