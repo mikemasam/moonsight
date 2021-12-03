@@ -9,7 +9,7 @@ class AppState {
     return this.ctx.opts.channelName;
   }
   get(name){
-    return (this.ctx.opts.settings || {})[name];
+    return this.ctx.opts.settings[name];
   }
   put(name, data){
     this.ctx.opts.settings[name] = data;
