@@ -62,9 +62,9 @@ class AppState {
         lock: task.lock,
         clear: async () => this.clearQueue(task.lock)
       });
-      console.log('new task pushed');
+      //console.log('new task pushed');
     }else{
-      console.log('no new task');
+      //console.log('no new task');
       this.get(`kernel.appstate.queue.current`).splice(index, 1)
     }
   }
