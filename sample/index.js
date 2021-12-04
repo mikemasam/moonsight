@@ -1,8 +1,10 @@
 import { Response } from '../responders/index.js';
 import { IHttp, ISocket } from '../handlers/index.js';
 
-const http = async () => {
-  return Response({ name: 'this is a name' });
+const http = async (req, res, AppState) => {
+  const lock = await AppState.queue('test');
+  if(lock) setTimeout(() => lock.clear(), 5000);
+  return Response({ lock, name: 'this is a name' });
 }
 
 export const ihttp = IHttp(http, []);
