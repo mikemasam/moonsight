@@ -5,6 +5,9 @@ class AppState {
   events(){
     return this.ctx.events;
   }
+  io(){
+    return this.ctx.net.socketIO;
+  }
   channel(){
     return this.ctx.opts.channelName;
   }
@@ -20,8 +23,10 @@ class AppState {
   //stack
   push(name, data){
     this.ctx.opts.settings[name]?.push(data);
+    console.log('AppState.push --> removed')
   }
   remove(name, index){
+    console.log('AppState.remove --> removed')
     return this.ctx.opts.settings[name]?.splice(index, 1);
   }
 
