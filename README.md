@@ -1,5 +1,6 @@
 # API
 
+##demo > copy startup.js to your project
 ### Kernel opts
 ```
 {
