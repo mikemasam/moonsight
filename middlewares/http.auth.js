@@ -1,5 +1,5 @@
 import { FailedResponse } from '../responders/index.js';
-export default async (ctx, req, res, addHook) => {
+export default async (ctx, req, res, args, addHook) => {
   addHook(paginationHook);
   //return FailedResponse({ status: 401, message: 'Auth failed' });
 }
