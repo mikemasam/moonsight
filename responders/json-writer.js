@@ -27,7 +27,7 @@ export default (data = {}, logs = {}, rawData = {}) => {
     logRequest({ ...log, ...logs});
     if(data?.status === 0) return;
 
-    if(res.json){
+    if(res?.json){
       res.json({ ...data, success: data?.status == 200 });
     }
     else if(res && res.fn){

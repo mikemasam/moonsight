@@ -2,13 +2,18 @@ import { Request, Response, AppState, NotFound, EmptyResponse, UnhandledReponse 
 const AsyncFn = (async () => {}).constructor;
 
 export default function IBatchHttp(routes, middlewares){
-  function IHttpHandler(ctx, stat){
+  function IBatchHttpHandler(ctx, stat){
     for(const key in routes){
       const route = routes[key];
+      if(key == 'com')
+        throw `[Router] ~ ${stat._fullPath} 'com' route is not available.`;
       if(route instanceof AsyncFn !== true) 
         throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
     }
-
+    const err = e => { 
+      console.log(e); 
+      return null; 
+    };
     return [(req, res) => {
       const { startTime } = res.__locals;
       const log = {
@@ -20,10 +25,12 @@ export default function IBatchHttp(routes, middlewares){
       const state = Request(req);
       const results = {};
       const tasks = [];
+      const com = body['com'];
       for(const key in body){
+        if(key =='com') continue;
         const route = routes[key];
         if(route){
-          tasks.push(route(body[key], state, AppState(ctx))?.catch(e => null).then(result => {
+          tasks.push(route({ ...com, ...body[key] }, state, AppState(ctx))?.catch(err).then(result => {
             results[key] = result;
           }));
         }else{
@@ -40,7 +47,7 @@ export default function IBatchHttp(routes, middlewares){
     }, middlewares];
   };
 
-  IHttpHandler.__ihandler = 'ihttp';
-  return IHttpHandler;
+  IBatchHttpHandler.__ihandler = 'ihttp';
+  return IBatchHttpHandler;
 }
 
