@@ -3,6 +3,7 @@ import SocketApp from './lib/socket/index.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
 import Router from './lib/router/index.js';
+import UniversalIdentity from './lib/universal.identity.js';
 import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
   UnhandledReponse, NotFound, 
@@ -69,6 +70,7 @@ export {
   IBatchHttp,
   CoreNet,
   Request,
-  NoResponse
+  NoResponse,
+  UniversalIdentity
 }
 
