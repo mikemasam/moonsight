@@ -3,8 +3,8 @@ import { Response, PaginatedResponse } from '../responders/index.js';
 import { CoreNet } from '../lib/corenet/index.js';
 
 export const ihttp = IHttp(async (req) => {
-  console.log(req.params);
-  console.log(req.query);
+  //console.log(req.params);
+  //console.log(req.query);
   return Response({ results: [1, 2, 3, 4, 5], total: 10 });
 },['http.auth']);
 

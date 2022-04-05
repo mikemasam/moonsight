@@ -2,6 +2,9 @@ class RequestState {
   constructor(req){
     this.req = req;
   }
+  req(){
+    return this.req;
+  }
 
   get(name){
     if(this.req.__type == 'ihttp'){

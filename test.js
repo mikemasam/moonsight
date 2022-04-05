@@ -10,6 +10,9 @@ const kernel = await Kernel({
   mountCore: {
     allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
   },
+  settings: {
+    test: 'testing'
+  },
   logging: {
     //http: true,
     //core: true,

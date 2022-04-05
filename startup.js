@@ -13,6 +13,9 @@ const context = await Kernel({
   mountCore: {                        //for corenet master
     allowedIPs: ['0.0.0.0']
   },
+  settings: {
+    test: 'testing'
+  },
   logging: {
     error: true,
     http: false,
