@@ -42,7 +42,7 @@ const logRequest = async (log) => {
   //console.log(log);
   const { opts } = log.ctx;
   const date = Date(log.startTime).toString();
-  if(opts.logging?.http)
+  if(opts.logging?.http || opts.logging?.networking)
     console.log(`[${date.slice(0, date.lastIndexOf(':') + 3)}] ${log.method} ${log.url} ~ ${log.path} ${log.status} ${log.endTime - log.startTime}ms`);
   if(opts.logging?.error && log.err) console.error(`[Exception] ~ ${log.method} ${log.url} `, log.err);
 }

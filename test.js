@@ -18,6 +18,7 @@ const kernel = await Kernel({
     //core: true,
     //socket: true,
     //loader: true,
+    networking: true,
     error: true
   }
 }).catch(console.error);

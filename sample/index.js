@@ -1,4 +1,4 @@
-import { Response } from '../responders/index.js';
+import { FailedResponse, Response } from '../responders/index.js';
 import { IHttp, ISocket, ISocketMount } from '../handlers/index.js';
 
 const http = async (req, res, AppState) => {
@@ -17,6 +17,5 @@ export const isocket = ISocket(async ({ socket, body }) => {
 
 export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
   //console.log(req);
-  //throw "This is an error";
-  return null;
+  //throw FailedResponse({ message: "Connection rejected, invalid authentication" });
 });
