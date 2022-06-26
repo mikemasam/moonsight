@@ -1,5 +1,5 @@
 import { Response } from '../responders/index.js';
-import { IHttp, ISocket } from '../handlers/index.js';
+import { IHttp, ISocket, ISocketMount } from '../handlers/index.js';
 
 const http = async (req, res, AppState) => {
   const lock = await AppState.queue('test');
@@ -9,9 +9,14 @@ const http = async (req, res, AppState) => {
 
 export const ihttp = IHttp(http, []);
 
-
-export const isocket = ISocket(async ({ socket, body, user, business, device }) => {
-  //console.log(body);
-  return Response({ name: "this is name " });
+//user, business, device
+export const isocket = ISocket(async ({ socket, body }) => {
+  console.log(body);
+  return Response({ body, name: "this is name " });
 }, ['socket.auth']);
 
+export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
+  //console.log(req);
+  //throw "This is an error";
+  return null;
+});

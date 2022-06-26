@@ -12,7 +12,7 @@ import {
   Request, NoResponse
 } from './responders/index.js';
 
-import { IHttp, ISocket, ICore, IMount, IBatchHttp } from './handlers/index.js';
+import { IHttp, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
 
 //system context
 let context = {
@@ -65,6 +65,7 @@ export {
   FailedResponse, 
   IHttp,
   ISocket,
+  ISocketMount,
   ICore,
   IMount,
   IBatchHttp,

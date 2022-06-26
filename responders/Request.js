@@ -11,6 +11,8 @@ class RequestState {
       return this.req.locals[name];
     }else if(this.req.__type == 'isocket'){
       return this.req.socket.locals[name];
+    }else if(this.req.__type == 'isocketmount'){
+      return this.req.socket.locals[name];
     }else if(this.req.__type == 'icore'){
       return this.req.socket.locals[name];
     }
@@ -21,6 +23,8 @@ class RequestState {
     if(this.req.__type == 'ihttp'){
       this.req.locals[name] = data;
     }else if(this.req.__type == 'isocket'){
+      this.req.socket.locals[name] = data;
+    }else if(this.req.__type == 'isocketmount'){
       this.req.socket.locals[name] = data;
     }else if(this.req.__type == 'icore'){
       this.req.socket.locals[name] = data;
