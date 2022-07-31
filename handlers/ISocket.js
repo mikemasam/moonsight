@@ -10,7 +10,7 @@ export default function ISocket(handler, middlewares){
     return [(req, res) => {
       const log = {
         path: stat._location,
-        ctx,
+        opts: ctx.opts,
         startTime: Date.now(),
       };
       handler(req, res, AppState(ctx))

@@ -16,6 +16,6 @@ export const isocket = ISocket(async ({ socket, body }) => {
 }, ['socket.auth']);
 
 export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
-  //console.log(req);
+  console.log(socket.id);
   //throw FailedResponse({ message: "Connection rejected, invalid authentication" });
 });

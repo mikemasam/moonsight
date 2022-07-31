@@ -2,16 +2,18 @@
 //to start 
 //#> node index.js
 import path from 'path';
-import Kernel from 'deba-kerneljs';
+import Kernel from './index.js';
 const context = await Kernel({
-  apiPath: path.resolve('api'),
-  //middlewares: path.resolve('middlewares'),
+  apiPath: path.resolve('sample'),
+  apiMount: 'api',
+  middlewares: path.resolve('middlewares'),
   port: 8080,
   apiMount: 'api',
-  channelName: '',                    //corenet identity 
-  coreHost: 'http://localhost:4000',  //for corenet client connecting to master
+  channelName: 'Test1',                    //corenet identity 
+  coreHost: 'http://localhost:5000',  //for corenet client connecting to master
   mountCore: {                        //for corenet master
-    allowedIPs: ['0.0.0.0']
+    allowedIPs: ['0.0.0.0'],
+    mount: false
   },
   settings: {
     test: 'testing'

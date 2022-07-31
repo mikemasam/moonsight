@@ -20,7 +20,11 @@ let context = {
     apiPath: '',
     apiMiddlewares: null,
     port: null,
-    mountCore: false,
+    mountCore: {
+      port: null,
+      mount: false,
+      //allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
+    },
     settings: {},
     logging: {
       http: false,
@@ -46,12 +50,17 @@ export default async function boot(args){
     .then(SocketApp)
     .then(Router)
     .then(CoreNetwork);
-  const { events, net: { app, httpServer }, opts  } = context;
+  const { events, net: { app, httpServer, coreServer }, opts  } = context;
   if(!opts.port) throw `[KernelJs] Invalid server port [port] = ${opts.port}.`;
   httpServer.listen(opts.port, '0.0.0.0', () => {
-    console.log(`[KernelJs] ~ started on host:${opts.port}`)
+    console.log(`[KernelJs] ~ Http&SocketIO: started on host:${opts.port}`)
     events.emit('kernel.ready');
   });
+  if(coreServer){
+    coreServer.listen(opts.mountCore.port, '0.0.0.0', () => {
+      console.log(`[KernelJs] ~ CoreNet: started on host:${opts.mountCore.port}`)
+    });
+  }
   //console.log(app._router.stack);
   return context;
 }

@@ -8,7 +8,9 @@ const kernel = await Kernel({
   channelName: 'test',
   //coreHost: 'http://localhost:3003',
   mountCore: {
-    allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1'
+    allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1',
+    port: 5000,
+    mount: true 
   },
   settings: {
     test: 'testing'
