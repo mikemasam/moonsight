@@ -8,7 +8,6 @@ const context = await Kernel({
   apiMount: 'api',
   middlewares: path.resolve('middlewares'),
   port: 8080,
-  apiMount: 'api',
   channelName: 'Test1',                    //corenet identity 
   coreHost: 'http://localhost:5000',  //for corenet client connecting to master
   mountCore: {                        //for corenet master
@@ -17,6 +16,9 @@ const context = await Kernel({
   },
   settings: {
     test: 'testing'
+  },
+  redis: {
+    url: undefined
   },
   logging: {
     error: true,

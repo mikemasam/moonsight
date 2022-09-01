@@ -1,4 +1,6 @@
 import HttpApp from './lib/http.js';
+import RedisApp from './lib/redis.js';
+import QueueApp from './lib/queue.js';
 import SocketApp from './lib/socket/index.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
@@ -31,7 +33,9 @@ let context = {
       core: false,
       socket: false,
       loader: false,
-      error: false 
+      error: false,
+      networking: false,
+      queue: false
     }
   },
   net: {
@@ -45,13 +49,18 @@ let context = {
 
 export default async function boot(args){
   context = await Enviroment(context, args)
-    .then(HttpApp)
     .then(SystemEvents)
+    .then(HttpApp)
+    .then(RedisApp)
     .then(SocketApp)
     .then(Router)
-    .then(CoreNetwork);
-  const { events, net: { app, httpServer, coreServer }, opts  } = context;
-  if(!opts.port) throw `[KernelJs] Invalid server port [port] = ${opts.port}.`;
+    .then(CoreNetwork)
+    .then(QueueApp);
+  const { events, net: { app, httpServer, coreServer, RedisClient }, opts  } = context;
+  if(!opts.port) throw new Error(`[KernelJs] ~ Invalid server port [port] = ${opts.port}.`);
+  await RedisClient.connect().catch(err => false);
+  if(!RedisClient.isReady) throw new Error(`[KernelJs] ~ Redis connection failed.`);
+  else console.log("[KernelJs] ~ Redis connected.");
   httpServer.listen(opts.port, '0.0.0.0', () => {
     console.log(`[KernelJs] ~ Http&SocketIO: started on host:${opts.port}`)
     events.emit('kernel.ready');
