@@ -14,7 +14,7 @@ import {
   Request, NoResponse
 } from './responders/index.js';
 
-import { IHttp, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
+import { IHttp, IJob, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
 
 //system context
 let context = {
@@ -33,9 +33,10 @@ let context = {
       core: false,
       socket: false,
       loader: false,
-      error: false,
+      error: true,
       networking: false,
-      queue: false
+      queue: false,
+      job: false
     }
   },
   net: {
@@ -44,7 +45,8 @@ let context = {
     httpApp: null,
     socketIO: null,
     coreIO: null
-  } 
+  },
+  ready: false
 };
 
 export default async function boot(args){
@@ -61,15 +63,15 @@ export default async function boot(args){
   await RedisClient.connect().catch(err => false);
   if(!RedisClient.isReady) throw new Error(`[KernelJs] ~ Redis connection failed.`);
   else console.log("[KernelJs] ~ Redis connected.");
-  httpServer.listen(opts.port, '0.0.0.0', () => {
-    console.log(`[KernelJs] ~ Http&SocketIO: started on host:${opts.port}`)
-    events.emit('kernel.ready');
-  });
   if(coreServer){
     coreServer.listen(opts.mountCore.port, '0.0.0.0', () => {
       console.log(`[KernelJs] ~ CoreNet: started on host:${opts.mountCore.port}`)
     });
   }
+  httpServer.listen(opts.port, '0.0.0.0', () => {
+    console.log(`[KernelJs] ~ Http&SocketIO: started on host:${opts.port}`)
+    events.emit('kernel.ready');
+  });
   //console.log(app._router.stack);
   return context;
 }
@@ -90,6 +92,7 @@ export {
   CoreNet,
   Request,
   NoResponse,
-  UUID
+  UUID,
+  IJob
 }
 

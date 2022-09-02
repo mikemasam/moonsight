@@ -3,7 +3,7 @@ import { IHttp, ISocket, ISocketMount } from '../handlers/index.js';
 
 const http = async (req, res, AppState) => {
   const lock = await AppState.queue('test');
-  if(lock) setTimeout(() => lock.clear(), 5000);
+  if(lock) setTimeout(() => lock.clear(), 500);
   return Response({ lock, name: 'this is a name' });
 }
 

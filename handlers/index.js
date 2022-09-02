@@ -4,5 +4,6 @@ import ISocketMount from './ISocketMount.js';
 import ICore from './ICore.js';
 import IMount from './IMount.js';
 import IBatchHttp from './IBatchHttp.js';
+import IJob from './IJob.js';
 
-export { IHttp, ISocket, ISocketMount, ICore, IMount, IBatchHttp };
+export { IJob, IHttp, ISocket, ISocketMount, ICore, IMount, IBatchHttp };

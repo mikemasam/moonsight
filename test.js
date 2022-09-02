@@ -12,16 +12,20 @@ const kernel = await Kernel({
     port: 5000,
     mount: true 
   },
+  redis: {
+    url: "redis://localhost:6379"
+  },
   settings: {
     test: 'testing'
   },
   logging: {
-    //http: true,
-    //core: true,
-    //socket: true,
+    http: true,
+    core: true,
+    socket: true,
     //loader: true,
     networking: true,
-    error: true
+    error: true,
+    job: true
   }
 }).catch(console.error);
 

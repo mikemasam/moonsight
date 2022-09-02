@@ -9,6 +9,7 @@ const http2 = async (params) => {
 }
 
 export const ihttp = IBatchHttp({ http1, http2 }, []);
+
 /*
 const _req = {
   payments: { search: '' }
