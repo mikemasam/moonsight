@@ -23,5 +23,5 @@ const job = async (AppState) => {
   AppState.queueJob(":api:users", { i: 0 });
   return IJob.OK;
 }
-export const ijob = IJob(job, { seconds: 5 }, { hi: 0 });
+export const ijob = IJob(job, { seconds: 5, instant: true }, { hi: 0 });
 

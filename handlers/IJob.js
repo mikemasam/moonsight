@@ -7,29 +7,26 @@ export default function IJob(handler, opts, args){
     const jobstate = {
       expected: 10
     };
+    const onResult = (result) => {
+      if(result == IJob.OK){
+        jobstate.expected = opts.seconds;
+      }else{
+        jobstate.expected = result;
+      }
+    }
+    ctx.events.once("kernel.ready", () => {
+      if(opts.instant)
+        runJob(handler, ctx, name, args || {}).then(onResult);
+    });
     ctx.events.on("kernel.heartbeat", () => {
       if(jobstate.expected > 0) jobstate.expected--;
       else {
-        runJob(handler, ctx, name, args || {})
-          .then(result => {
-            if(result == IJob.OK){
-              jobstate.expected = opts.seconds;
-            }else{
-              jobstate.expected = result;
-            }
-          });
+        runJob(handler, ctx, name, args || {}).then(onResult);
       }
     });
     ctx.events.on("kernel.jobs.run", (job_name, job_args) => {
       if(job_name == name) {
-        runJob(handler, ctx, name, job_args || {})
-          .then(result => {
-            if(result == IJob.OK){
-              jobstate.expected = opts.seconds;
-            }else{
-              jobstate.expected = result;
-            }
-          });
+        runJob(handler, ctx, name, job_args || {}).then(onResult);
       }
     });
   };
