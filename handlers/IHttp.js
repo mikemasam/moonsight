@@ -5,7 +5,7 @@ export default function IHttp(handler, middlewares){
 
   function IHttpHandler(ctx, stat){
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
+      throw `[KernelJs] ~ ${stat._fullPath} async handler function is required.`;
 
     return [(req, res) => {
       const { startTime } = res.__locals;

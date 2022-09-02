@@ -3,7 +3,7 @@ export default function IMount(handler){
   function IMountHandler(ctx, stat){
     const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} IMount async handler function is required.`;
+      throw `[KernelJs] ~ ${stat._fullPath} IMount async handler function is required.`;
     ctx.events.once("kernel.ready", () => {
       handler(AppState(ctx), {
         path: stat._path,

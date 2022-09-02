@@ -5,7 +5,7 @@ export default function ISocket(handler, middlewares){
 
     const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} ISocket async handler function is required.`;
+      throw `[KernelJs] ~ ${stat._fullPath} ISocket async handler function is required.`;
 
     return [(req, res) => {
       const log = {

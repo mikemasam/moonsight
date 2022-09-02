@@ -6,9 +6,9 @@ export default function IBatchHttp(routes, middlewares){
     for(const key in routes){
       const route = routes[key];
       if(key == 'com')
-        throw `[Router] ~ ${stat._fullPath} 'com' route is not available.`;
+        throw `[KernelJs] ~ ${stat._fullPath} 'com' route is not available.`;
       if(route instanceof AsyncFn !== true) 
-        throw `[Router] ~ ${stat._fullPath} async handler function is required.`;
+        throw `[KernelJs] ~ ${stat._fullPath} async handler function is required.`;
     }
     const err = e => { 
       console.log(e); 

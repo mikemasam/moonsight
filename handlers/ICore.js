@@ -3,7 +3,7 @@ export default function ICore(handler, middlewares){
   function ICoreHandler(ctx, stat){
     const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
-      throw `[Router] ~ ${stat._fullPath} ICore async handler function is required.`;
+      throw `[KernelJs] ~ ${stat._fullPath} ICore async handler function is required.`;
 
     return [(req, res) => {
       const log = {
