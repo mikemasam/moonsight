@@ -1,5 +1,5 @@
 import { FailedResponse, Response } from '../responders/index.js';
-import { IHttp, ISocket, ISocketMount } from '../handlers/index.js';
+import { IMount, IHttp, ISocket, ISocketMount } from '../handlers/index.js';
 
 const http = async (req, res, AppState) => {
   const lock = await AppState.queue('test');
@@ -18,4 +18,8 @@ export const isocket = ISocket(async ({ socket, body }) => {
 export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
   console.log(socket.id);
   //throw FailedResponse({ message: "Connection rejected, invalid authentication" });
+});
+
+export const imount = IMount(async () => {
+  console.log("mounted");
 });
