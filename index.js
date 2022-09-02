@@ -52,12 +52,12 @@ let context = {
 export default async function boot(args){
   context = await Enviroment(context, args)
     .then(SystemEvents)
+    .then(QueueApp)
     .then(HttpApp)
     .then(RedisApp)
     .then(SocketApp)
     .then(Router)
-    .then(CoreNetwork)
-    .then(QueueApp);
+    .then(CoreNetwork);
   const { events, net: { app, httpServer, coreServer, RedisClient }, opts  } = context;
   if(!opts.port) throw new Error(`[KernelJs] ~ Invalid server port [port] = ${opts.port}.`);
   await RedisClient.connect().catch(err => false);
