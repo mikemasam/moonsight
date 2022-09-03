@@ -23,7 +23,7 @@ class AppState {
     return this.ctx.queue.aquire(name, opts);
   }
   queueJob(name, opts){
-    return this.ctx.events.emit("kernel.jobs.run", name, opts);
+    return this.ctx.events.emit(`kernel.jobs.run.${name}`, name, opts);
   }
 
   //stack

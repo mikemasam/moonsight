@@ -4,24 +4,31 @@ export default function IJob(handler, opts, args){
   if(handler instanceof AsyncFn !== true) 
     throw `[KernelJs] ~ ${stat._fullPath} IJob async handler function is required.`;
   function IJobHandler(ctx, stat, name){
-    const jobstate = {
-      expected: 10
-    };
-    const onResult = (result) => {
+    const jobstate = { expected: 15, failed: 0 };
+    const onResult = (res) => {
+      const [result, message] = Array.isArray(res) ? res : [res, ''];
+      const msg = message ? `+ {${message}}` : '+';
+      if(result == IJob.FAILED) {
+        jobstate.failed++;
+        console.log(`[KernelJs] ~ JOB FAILED (${jobstate.failed}):`, name, msg);
+      }
       if(ctx.opts.logging.job){
         if(result == IJob.EMPTY)
-          console.log("[KernelJs] ~ JOB EMPTY:", name);
+          console.log("[KernelJs] ~ JOB EMPTY:", name, msg);
         else if(result == IJob.OK)
-          console.log("[KernelJs] ~ JOB OK [SNAIL]:", name);
+          console.log("[KernelJs] ~ JOB OK [SNAIL]:", name, msg);
         else if(result == IJob.CONTINUE)
-          console.log("[KernelJs] ~ JOB NEXT:", name);
+          console.log("[KernelJs] ~ JOB NEXT:", name, msg);
         else if(result == IJob.BUSY)
-          console.log("[KernelJs] ~ JOB BUSY:", name);
-        else console.log("[KernelJs] ~ JOB OK(s):", name, result);
+          console.log("[KernelJs] ~ JOB BUSY:", name, msg);
+        else if(result == IJob.FAILED) {}
+        else console.log("[KernelJs] ~ JOB OK(s):", name, msg);
       }
 
       if(result == undefined || result == IJob.OK || result == IJob.EMPTY){
         jobstate.expected = opts.seconds || IJob.BACKOFF;
+      }else if(result == IJob.FAILED){
+        jobstate.expected = IJob.BACKOFF;
       }else if(result > 0){
         jobstate.expected = result;
       }else{
@@ -38,10 +45,8 @@ export default function IJob(handler, opts, args){
         runJob(handler, ctx, name, args || {}).then(onResult);
       }
     });
-    ctx.events.on("kernel.jobs.run", (job_name, job_args) => {
-      if(job_name == name) {
-        runJob(handler, ctx, name, job_args || {}).then(onResult);
-      }
+    ctx.events.on(`kernel.jobs.run.${name}`, (job_name, job_args) => {
+      runJob(handler, ctx, name, job_args || {}).then(onResult);
     });
   };
   IJobHandler.__ihandler = 'ijob';
@@ -52,6 +57,7 @@ IJob.OK = 10;
 IJob.BACKOFF = 60;
 IJob.EMPTY = -1;
 IJob.BUSY = -2;
+IJob.FAILED = -3;
 
 const runJob = async (handler, ctx, name, args) => {
   const lock = await ctx.queue.aquire(name, { wait: false })
