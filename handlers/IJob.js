@@ -29,6 +29,9 @@ export default function IJob(handler, opts, args){
         jobstate.expected = opts.seconds || IJob.BACKOFF;
       }else if(result == IJob.FAILED){
         jobstate.expected = IJob.BACKOFF;
+      }else if(result == IJob.CONTINUE){
+        jobstate.expected = opts.seconds || IJob.BACKOFF;
+        runJob(handler, ctx, name, {}).then(onResult);
       }else if(result > 0){
         jobstate.expected = result;
       }else{
@@ -42,6 +45,7 @@ export default function IJob(handler, opts, args){
     ctx.events.on("kernel.heartbeat", () => {
       if(jobstate.expected > 0) jobstate.expected--;
       else {
+        jobstate.expected = opts.seconds || IJob.BACKOFF;
         runJob(handler, ctx, name, args || {}).then(onResult);
       }
     });
@@ -62,12 +66,14 @@ IJob.FAILED = -3;
 const runJob = async (handler, ctx, name, args) => {
   const lock = await ctx.queue.aquire(name, { wait: false })
   if(!lock) return IJob.BUSY;
+  ctx.state.count++;
   if(ctx.opts.logging.job)
     console.log("[KernelJs] ~ JOB RUNNING :", name);
   const result = await handler(AppState(ctx), args).catch(err => {
     console.log("[KernelJs] ~ JOB ERRORED :", name, err);
     return IJob.OK;
   });
+  ctx.state.count--;
   lock.clear();
   return result;
 }

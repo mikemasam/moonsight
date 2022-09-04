@@ -1,4 +1,4 @@
-import { Request, Response, AppState, NotFound, EmptyResponse, UnhandledReponse } from '../responders/index.js';
+import { Request, Response, AppState, NotFound, FailedResponse, EmptyResponse, UnhandledReponse } from '../responders/index.js';
 const AsyncFn = (async () => {}).constructor;
 
 export default function IBatchHttp(routes, middlewares){
@@ -21,6 +21,8 @@ export default function IBatchHttp(routes, middlewares){
         ctx,
         startTime 
       };
+      if(!ctx.ready) return FailedResponse()(log, req, res);
+      ctx.state.count++;
       const body = req.body;
       const state = Request(req);
       const results = {};
@@ -38,6 +40,7 @@ export default function IBatchHttp(routes, middlewares){
         }
       }
       Promise.all(tasks).then(() => Response(results)(log, req, res));
+      ctx.state.count--;
       /*
       handler(req, res, AppState(ctx))
         .then(_r => _r?.responder ? _r : EmptyResponse())

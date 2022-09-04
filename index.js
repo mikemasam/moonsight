@@ -22,6 +22,7 @@ let context = {
     apiPath: '',
     apiMiddlewares: null,
     port: null,
+    shutdownTimeout: 30,
     mountCore: {
       port: null,
       mount: false,
@@ -36,7 +37,8 @@ let context = {
       error: true,
       networking: false,
       queue: false,
-      job: false
+      job: false,
+      kernel: false
     }
   },
   net: {
@@ -46,7 +48,12 @@ let context = {
     socketIO: null,
     coreIO: null
   },
-  ready: false
+  ready: undefined,
+  state: {
+    count: 0,
+    shutdown: false,
+    timeout: 0
+  }
 };
 
 export default async function boot(args){
