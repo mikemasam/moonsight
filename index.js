@@ -52,7 +52,8 @@ let context = {
   state: {
     count: 0,
     shutdown: false,
-    timeout: 0
+    timeout: 0,
+    corenetReady: false
   }
 };
 

@@ -20,7 +20,7 @@ export default function IJob(handler, opts, args){
         jobstate.expected = opts.seconds || IJob.BACKOFF;
       }
     }
-    ctx.events.once("kernel.ready", () => {
+    ctx.events.once("kernel.corenet.ready", () => {
       if(opts.instant)
         runJob(handler, ctx, args || {}, jobstate).then(onResult);
     });
@@ -47,11 +47,15 @@ IJob.FAILED = -3;
 IJob._ERRORED = -4;
 
 const runJob = async (handler, ctx, args, jobstate) => {
+  if(ctx.state.corenetReady === false){
+    console.log("corenet not ready");
+    return parseResponse(ctx.opts, IJob.BUSY, 0, jobstate);
+  }
   const lock = await ctx.queue.aquire(jobstate.name, { wait: false })
   if(!lock) return parseResponse(ctx.opts, IJob.BUSY, 0, jobstate);
   ctx.state.count++;
-//  if(ctx.opts.logging.job)
-//    console.log("[KernelJs] ~ JOB RUNNING :", name);
+  //  if(ctx.opts.logging.job)
+  //    console.log("[KernelJs] ~ JOB RUNNING :", name);
   const res = await handler(AppState(ctx), args).catch(err => {
     //console.log("[KernelJs] ~ JOB ERRORED :", jobstate.name, err);
     return [IJob._ERRORED, err];
@@ -63,7 +67,7 @@ const runJob = async (handler, ctx, args, jobstate) => {
 
 const parseResponse = async (ctx_opts, res, lockTime, jobstate) => {
   const [result, message] = Array.isArray(res) ? res : [res, ''];
-  const msg = message ? `+ {${message}} ${lockTime}s` : `+ ${lockTime}s`;
+  const msg = message ? `+ {${message}} ${lockTime}ms` : `+ ${lockTime}ms`;
   const prt_logs = [`<${jobstate.name}>`, msg];
   if(result == IJob.FAILED) {
     console.log(`[KernelJs] ~ JOB FAILED (${jobstate.failed})`, ...prt_logs);
