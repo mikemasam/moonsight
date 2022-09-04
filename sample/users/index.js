@@ -20,8 +20,9 @@ const job = async (AppState) => {
   //CoreJob.queue("api:users", { hi: 1 });
   //return IJob.BACKOFF;
   //console.log("Job called");
-  AppState.queueJob(":api:users", { i: 0 });
-  return [IJob.FAILED, "Just like that"];
+  //AppState.queueJob(":api:users", { i: 0 });
+  //throw new Error("112121");
+  return [IJob.OK, "Just like that"];
 }
-export const ijob = IJob(job, { seconds: 1, instant: true }, { hi: 0 });
+export const ijob = IJob(job, { seconds: 3, instant: true }, { hi: 0 });
 
