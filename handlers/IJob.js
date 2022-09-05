@@ -1,9 +1,9 @@
 import { AppState } from '../responders/index.js';
 export default function IJob(handler, opts, args){
   const AsyncFn = (async () => {}).constructor;
-  if(handler instanceof AsyncFn !== true) 
-    throw `[KernelJs] ~ ${stat._fullPath} IJob async handler function is required.`;
   function IJobHandler(ctx, stat, name){
+    if(handler instanceof AsyncFn !== true) 
+      throw `[KernelJs] ~ ${stat._fullPath} IJob async handler function is required.`;
     const jobstate = { expected: 15, failed: 0, name: name };
     const onResult = (result) => {
       if(result == undefined || result == IJob.OK || result == IJob.EMPTY){
