@@ -73,11 +73,11 @@ export default async function boot(args){
   else console.log("[KernelJs] ~ Redis connected.");
   if(coreServer){
     coreServer.listen(opts.mountCore.port, '0.0.0.0', () => {
-      console.log(`[KernelJs] ~ CoreNet: started on host:${opts.mountCore.port}`)
+      console.log(`[KernelJs] ~ CoreNet: host:${opts.mountCore.port}`)
     });
   }
   httpServer.listen(opts.port, '0.0.0.0', () => {
-    console.log(`[KernelJs] ~ Http&SocketIO: started on host:${opts.port}`)
+    console.log(`[KernelJs] ~ Http&SocketIO: host:${opts.port}`)
     events.emit('kernel.ready');
   });
   //console.log(app._router.stack);
