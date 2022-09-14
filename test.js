@@ -19,13 +19,15 @@ const kernel = await Kernel({
     test: 'testing'
   },
   logging: {
-    http: true,
-    core: true,
-    socket: true,
+    //http: true,
+//    core: true,
+    //socket: true,
     //loader: true,
-    networking: true,
-    error: true,
-    job: true
+//    networking: true,
+//    error: true,
+//    job: true,
+//    socketmount: true,
+//    mount: true
   }
 }).catch(console.error);
 
