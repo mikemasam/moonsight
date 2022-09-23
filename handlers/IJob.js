@@ -4,7 +4,11 @@ export default function IJob(handler, opts, args){
     const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
       throw `[KernelJs] ~ ${stat._fullPath} IJob async handler function is required.`;
-    const jobstate = { expected: 15, failed: 0, name: name };
+    const jobstate = { 
+      expected: 15, 
+      failed: 0, 
+      name: name 
+    };
     const onResult = (result) => {
       if(result == undefined || result == IJob.OK || result == IJob.EMPTY){
         jobstate.expected = opts.seconds || IJob.BACKOFF;
@@ -21,8 +25,7 @@ export default function IJob(handler, opts, args){
       }
     }
     ctx.events.once("kernel.corenet.ready", () => {
-      if(opts.instant)
-        runJob(handler, ctx, args || {}, jobstate).then(onResult);
+      if(opts.instant) runJob(handler, ctx, args || {}, jobstate).then(onResult);
     });
     ctx.events.on("kernel.heartbeat", () => {
       if(jobstate.expected > 0) jobstate.expected--;
