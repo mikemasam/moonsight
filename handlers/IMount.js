@@ -4,8 +4,12 @@ export default function IMount(handler, opts = []){
     const AsyncFn = (async () => {}).constructor;
     if(handler instanceof AsyncFn !== true) 
       throw `[KernelJs] ~ ${stat._fullPath} IMount async handler function is required.`;
-    //ctx.events.once("kernel.ready", () => {
-    if(opts?.length && opts.indexOf("kernel.ready") > -1){
+    if(opts?.length && opts.indexOf("kernel.boot") > -1){
+      handler(AppState(ctx), {
+        path: stat._path,
+        router: stat.router
+      });
+    } else if(opts?.length && opts.indexOf("kernel.ready") > -1){
       ctx.events.once("kernel.ready", () => {
         handler(AppState(ctx), {
           path: stat._path,
