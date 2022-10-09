@@ -17,7 +17,7 @@ import {
 import { IHttp, IJob, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
 
 //system context
-let context = {
+let context_init = {
   opts: {
     apiPath: '',
     apiMiddlewares: null,
@@ -58,7 +58,7 @@ let context = {
 };
 
 export default async function boot(args){
-  context = await Enviroment(context, args)
+  global.deba_kernel_ctx = await Enviroment(context_init, args)
     .then(SystemEvents)
     .then(QueueApp)
     .then(HttpApp)
@@ -66,7 +66,7 @@ export default async function boot(args){
     .then(SocketApp)
     .then(Router)
     .then(CoreNetwork);
-  const { events, net: { app, httpServer, coreServer, RedisClient }, opts  } = context;
+  const { events, net: { app, httpServer, coreServer, RedisClient }, opts  } = global.deba_kernel_ctx;
   if(!opts.port) throw new Error(`[KernelJs] ~ Invalid server port [port] = ${opts.port}.`);
   await RedisClient.connect().catch(err => false);
   if(!RedisClient.isReady) throw new Error(`[KernelJs] ~ Redis connection failed.`);
@@ -81,7 +81,7 @@ export default async function boot(args){
     events.emit('kernel.ready');
   });
   //console.log(app._router.stack);
-  return context;
+  return global.deba_kernel_ctx;
 }
 
 export { 
