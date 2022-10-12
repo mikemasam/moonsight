@@ -14,7 +14,7 @@ export default function ISocket(handler, middlewares, config){
         startTime: Date.now(),
       };
       if(!ctx.ready) return FailedResponse()(log, req, res);
-      if(config && !UUID.latestVersion(req.query.appversion, config.minVersion || false ))
+      if(config && !UID.latestVersion(req.query.appversion, config.minVersion || false ))
         return FailedResponse({ 
           status: 405, 
           data: { status: 405 },
