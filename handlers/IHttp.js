@@ -2,7 +2,7 @@ import { AppState, NotFound, FailedResponse, EmptyResponse, UnhandledReponse } f
 import UID from '../lib/universal.identity.js';
 const AsyncFn = (async () => {}).constructor;
 
-export default function IHttp(handler, middlewares, config = {}){
+export default function IHttp(handler, middlewares, config){
 
   function IHttpHandler(ctx, stat){
     if(handler instanceof AsyncFn !== true) 
