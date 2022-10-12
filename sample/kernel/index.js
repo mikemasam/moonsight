@@ -9,7 +9,7 @@ export const imount = IMount(async (AppState) => {
 const load$subs$state = async (opts) => {
   if(opts.state != 'connection') return;
   const subs_state = await CoreNet.select(opts.channel.name).query(':api:kernel:subscriptions:state', {});
-  console.log("substate", subs_state);
+  //console.log("substate", subs_state);
   //await CoreNet.select(opts.channel.name).query(':api:kernel:connection', {});
 }
 

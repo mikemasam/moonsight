@@ -1,7 +1,8 @@
 import { AppState, NotFound, FailedResponse, EmptyResponse, UnhandledReponse } from '../responders/index.js';
+import UID from '../lib/universal.identity.js';
 const AsyncFn = (async () => {}).constructor;
 
-export default function IHttp(handler, middlewares){
+export default function IHttp(handler, middlewares, config = {}){
 
   function IHttpHandler(ctx, stat){
     if(handler instanceof AsyncFn !== true) 
@@ -15,6 +16,8 @@ export default function IHttp(handler, middlewares){
         startTime 
       };
       if(!ctx.ready) return FailedResponse()(log, req, res);
+      if(config && config.minVersion && !UUID.latestVersion(req.headers['appversion']))
+        return FailedResponse({ message: "Please update to latest version to continue" })(log, req, res);
       ctx.state.count++;
       handler(req, res, AppState(ctx))
         .then(_r => _r?.responder ? _r : EmptyResponse())

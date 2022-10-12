@@ -5,7 +5,7 @@ import SocketApp from './lib/socket/index.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
 import Router from './lib/router/index.js';
-import UUID from './lib/universal.identity.js';
+import UID from './lib/universal.identity.js';
 import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
   UnhandledReponse, NotFound, 
@@ -84,6 +84,7 @@ export default async function boot(args){
   return global.deba_kernel_ctx;
 }
 
+const UUID = UID;
 export { 
   UnhandledReponse, 
   NotFound, 
@@ -101,6 +102,7 @@ export {
   Request,
   NoResponse,
   UUID,
+  UID,
   IJob
 }
 

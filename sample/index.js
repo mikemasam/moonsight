@@ -23,5 +23,6 @@ export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
 
 export const imount = IMount(async () => {
   const res = UUID().entity('PAYMENT', 0)
-  console.log('UUID Entity', res);
+  console.log(UUID.latestVersion('1000....'));
+  //console.log('UUID Entity', res);
 });
