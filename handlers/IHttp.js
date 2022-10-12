@@ -16,7 +16,7 @@ export default function IHttp(handler, middlewares, config = {}){
         startTime 
       };
       if(!ctx.ready) return FailedResponse()(log, req, res);
-      if(config && !UID.latestVersion(req.headers['appversion'], config.minVersion || false))
+      if(config && !UID.latestVersion(req.headers['version'], config.minVersion || false))
         return FailedResponse({ status: 405, message: "Please update to latest version to continue" })(log, req, res);
       ctx.state.count++;
       handler(req, res, AppState(ctx))
