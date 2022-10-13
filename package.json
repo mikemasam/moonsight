@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "deba-kerneljs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DEBA Business Kernel JS",
   "main": "index.js",
   "scripts": {
