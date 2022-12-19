@@ -1,28 +1,21 @@
-import boot from '../boot.js';
-import HttpDoctor from '../doctor/http.js';
-import SocketDoctor from '../doctor/socket.js';
+import Doctor from '../doctor/index.js';
 
-let kernel = null;
-beforeAll(async () => {
-  kernel = await boot({ mocking: { socket: true, http: true }, autoBoot: false });
-  await kernel.boot();
-});
-afterAll(() => {
-  kernel.cleanup.dispose();
-});
+let doctor = await Doctor({ host: 'localhost:3003', socket: true });
+//beforeAll(async () => {
+//  doctor = await Doctor({ host: 'localhost:3003', socket: true });
+//});
+//afterAll(() => {
+//  doctor.cleanup();
+//});
 it('GET /api', async () => {
-  const doctor = await HttpDoctor(kernel);
-  expect(doctor).toBeTruthy();
-  const res = await doctor.get(`http://${kernel.opts.host}/api`);
+  const res = await doctor.http().get(`http://${doctor.host}/api`);
   expect(res).toBeTruthy();
   expect(res.status).toBe(200);
   expect(res.data.message).toBe("");
   expect(res.data.success).toBe(true);
 });
 it('SOCKET /api', async () => {
-  const doctor = await SocketDoctor(kernel);
-  expect(doctor).toBeTruthy();
-  const res = await doctor.emitAsync(':api', { hi: 1 });
+  const res = await doctor.socket().emitAsync(':api', { hi: 1 });
   expect(res).toBeTruthy();
   expect(res.status).toBe(200);
   expect(res.message).toBe("");

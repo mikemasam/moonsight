@@ -1,8 +1,15 @@
 import HttpDoctor from './http.js';
-import SocketDoctor from './socket.js';
-export default async function doctor(ctx){
-  if(ctx.opts.mocking?.socket){
-    await SocketDoctor(ctx);
+import SocketDoctor, 
+{ initSocket, cleanSocket } from './socket.js';
+export default async function doctor(opts){
+  if(opts.socket) await initSocket(opts);
+  return {
+    opts,
+    host: opts.host,
+    socket: () => SocketDoctor(),
+    http: () => HttpDoctor(opts),
+    cleanup: () => {
+      cleanSocket();
+    }
   }
-  ctx.events.emit("kernel.internal.doctor.ready");
 }

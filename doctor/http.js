@@ -24,9 +24,9 @@ axios.interceptors.response.use(function (response) {
     }
   });
 
-export default async function creator(kernel){
+export default function creator(opts){
   return axios.create({
-    baseURL: `http://${kernel.opts.host}`,
+    baseURL: `http://${opts.host}`,
     timeout: 50000,
     headers: {'MACHINE-ENV': 'LOCAL-TEST'},
     validateStatus: function (status) {

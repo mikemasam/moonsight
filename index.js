@@ -6,8 +6,6 @@ import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
 import Router from './lib/router/index.js';
 import Doctor from './doctor/index.js';
-import HttpDoctor from './doctor/http.js';
-import SocketDoctor from './doctor/socket.js';
 import UID from './lib/universal.identity.js';
 import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
@@ -81,7 +79,6 @@ export default async function create$kernel(args){
       global.deba_kernel_ctx.events.once('kernel.ready', () => reslv(true))
       await global.deba_kernel_ctx.net.bootRedis();
       global.deba_kernel_ctx.net.startup();
-      await Doctor(global.deba_kernel_ctx);
     });
   }
   if(opts.autoBoot) await global.deba_kernel_ctx.boot();
@@ -108,7 +105,6 @@ export {
   UUID,
   UID,
   IJob,
-  HttpDoctor,
-  SocketDoctor
+  Doctor,
 }
 

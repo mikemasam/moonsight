@@ -1,26 +1,22 @@
 import { io } from "socket.io-client";
 let socket = null;
-export default async function creator(kernel, query){
+
+
+export const cleanSocket = () => {
+  socket?.disconnect();
+}
+export const initSocket = async (opts) => {
   return new Promise(reslv => {
-    if(!socket){
-      socket = io(`http://${kernel.opts.host}`, { transports: ["websocket"], query });
-      socket.on('connect', () => reslv(socket));
-      socket.on("disconnect", (message) => reslv(null));
-      socket.on("error", (err) => reslv(null));
-      socket.on("connect_error", (err) => reslv(null));
-      kernel.cleanup.add("Socket Test", () => {
-        socket?.disconnect();
-      });
-      socket.emitAsync = emitAsync;
-    }else if(socket.connected){
-      reslv(socket);
-    }else if(socket){
-      socket.connect();
-      reslv(socket);
-    }else{
-      reslv(null);
-    }
+    socket = io(`http://${opts.host}`, { transports: ["websocket"], query: opts.socket?.query });
+    socket.on('connect', () => reslv(socket));
+    socket.on("disconnect", (message) => reslv(null));
+    socket.on("error", (err) => reslv(null));
+    socket.on("connect_error", (err) => reslv(null));
+    socket.emitAsync = emitAsync;
   });
+}
+export default function creator(){
+  return socket;
 }
 
 const emitAsync = async (path, value) => {
