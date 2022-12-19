@@ -1,25 +1,12 @@
-import Kernel from './index.js';
+import boot from './boot.js';
 import path from 'path';
-const kernel = await Kernel({
-  port: 3003,
-  apiPath: path.resolve('sample'),
-  apiMount: 'api',
-  middlewares: path.resolve('middlewares'),
-  channelName: 'test',
-  nodeIdentity: 111,
-  //coreHost: 'http://localhost:3003',
-  mountCore: {
-    allowedIPs: '127.0.0.1, 0.0.0.0, 172.27.208.1',
-    port: 5000,
-    mount: true 
-  },
-  redis: {
-    url: "redis://localhost:6379"
-  },
-  settings: {
-    test: 'testing'
-  },
-  logging: {
+const kernel = await boot({});
+//setTimeout(() => {
+//  kernel.cleanup.dispose();
+//  //console.log(process._getActiveHandles());
+//}, 3000);
+  //await kernel.boot();
+  //logging: {
     //http: true,
 //    core: true,
     //socket: true,
@@ -29,9 +16,6 @@ const kernel = await Kernel({
 //    job: true,
 //    socketmount: true,
 //    mount: true
-  }
-}).catch(console.error);
-
 //console.log(Object.keys(kernel));
 /*
 const isocket = ISocket(({ socket, data, user, business, device }) => {

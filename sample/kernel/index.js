@@ -3,7 +3,7 @@ import { CoreNet } from '../../lib/corenet/index.js';
 
 export const imount = IMount(async (AppState) => {
   AppState.events().on("kernel.connection", (opts) => load$subs$state(opts));
-  console.log("mounted");
+  //console.log("mounted");
 });
 
 const load$subs$state = async (opts) => {

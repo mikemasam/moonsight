@@ -5,6 +5,9 @@ import SocketApp from './lib/socket/index.js';
 import SystemEvents from './lib/events.js';
 import Enviroment from './lib/enviroment.js';
 import Router from './lib/router/index.js';
+import Doctor from './doctor/index.js';
+import HttpDoctor from './doctor/http.js';
+import SocketDoctor from './doctor/socket.js';
 import UID from './lib/universal.identity.js';
 import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
@@ -19,6 +22,8 @@ import { IHttp, IJob, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from '.
 //system context
 let context_init = {
   opts: {
+    autoBoot: true,
+    mocking: false,
     apiPath: '',
     apiMiddlewares: null,
     port: null,
@@ -50,6 +55,7 @@ let context_init = {
   },
   ready: undefined,
   state: {
+    up: false,
     count: 0,
     shutdown: false,
     timeout: 0,
@@ -57,30 +63,28 @@ let context_init = {
   }
 };
 
-export default async function boot(args){
+export default async function create$kernel(args){
   global.deba_kernel_ctx = await Enviroment(context_init, args)
-    .then(SystemEvents)
+  global.deba_kernel_ctx = await SystemEvents(global.deba_kernel_ctx)
     .then(QueueApp)
     .then(HttpApp)
     .then(RedisApp)
     .then(SocketApp)
     .then(Router)
     .then(CoreNetwork);
-  const { events, net: { app, httpServer, coreServer, RedisClient }, opts  } = global.deba_kernel_ctx;
+  const { events, net: { RedisClient }, opts  } = global.deba_kernel_ctx;
   if(!opts.port) throw new Error(`[KernelJs] ~ Invalid server port [port] = ${opts.port}.`);
-  await RedisClient.connect().catch(err => false);
-  if(!RedisClient.isReady) throw new Error(`[KernelJs] ~ Redis connection failed.`);
-  else console.log("[KernelJs] ~ Redis connected.");
-  if(coreServer){
-    coreServer.listen(opts.mountCore.port, '0.0.0.0', () => {
-      console.log(`[KernelJs] ~ CoreNet: host:${opts.mountCore.port}`)
+  global.deba_kernel_ctx.boot = async () => {
+    if(global.deba_kernel_ctx.state.up) return;
+    global.deba_kernel_ctx.state.up = true;
+    return new Promise(async reslv => {
+      global.deba_kernel_ctx.events.once('kernel.ready', () => reslv(true))
+      await global.deba_kernel_ctx.net.bootRedis();
+      global.deba_kernel_ctx.net.startup();
+      await Doctor(global.deba_kernel_ctx);
     });
   }
-  httpServer.listen(opts.port, '0.0.0.0', () => {
-    console.log(`[KernelJs] ~ Http&SocketIO: host:${opts.port}`)
-    events.emit('kernel.ready');
-  });
-  //console.log(app._router.stack);
+  if(opts.autoBoot) await global.deba_kernel_ctx.boot();
   return global.deba_kernel_ctx;
 }
 
@@ -103,6 +107,8 @@ export {
   NoResponse,
   UUID,
   UID,
-  IJob
+  IJob,
+  HttpDoctor,
+  SocketDoctor
 }
 

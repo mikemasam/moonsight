@@ -29,8 +29,7 @@ export default (data = {}, logs = {}, rawData = {}) => {
 
     if(res?.json){
       res.json({ ...data, success: data?.status == 200 });
-    }
-    else if(res && res.fn){
+    } else if(res && res.fn){
       res.fn({ ...data, success: data?.status == 200 });
     }
   };

@@ -1,4 +1,5 @@
 import { AppState } from '../responders/index.js';
+import logger from '../lib/logger.js';
 export default function IJob(handler, opts, args){
   function IJobHandler(ctx, stat, name){
     const AsyncFn = (async () => {}).constructor;
@@ -73,23 +74,23 @@ const parseResponse = async (ctx_opts, res, lockTime, jobstate) => {
   const msg = message ? `+ {${message}} ${lockTime}ms` : `+ ${lockTime}ms`;
   const prt_logs = [`<${jobstate.name}>`, msg];
   if(result == IJob.FAILED) {
-    console.log(`[KernelJs] ~ JOB FAILED (${jobstate.failed})`, ...prt_logs);
+    logger.job(`JOB FAILED (${jobstate.failed})`, ...prt_logs);
   }
   if(result == IJob._ERRORED) {
-    console.log(`[KernelJs] ~ JOB ERRORED (${jobstate.failed})`, ...prt_logs);
+    logger.job(`JOB ERRORED (${jobstate.failed})`, ...prt_logs);
   }
   if(ctx_opts.logging.job){
     if(result == IJob.EMPTY)
-      console.log("[KernelJs] ~ JOB EMPTY", ...prt_logs);
+      logger.job("JOB EMPTY", ...prt_logs);
     else if(result == IJob.OK)
-      console.log("[KernelJs] ~ JOB OK [SNAIL]", ...prt_logs);
+      logger.job("JOB OK [SNAIL]", ...prt_logs);
     else if(result == IJob.CONTINUE)
-      console.log("[KernelJs] ~ JOB NEXT [DONE]", ...prt_logs);
+      logger.job("JOB NEXT [DONE]", ...prt_logs);
     else if(result == IJob.BUSY)
-      console.log("[KernelJs] ~ JOB BUSY", ...prt_logs);
+      logger.job("JOB BUSY", ...prt_logs);
     else if(result == IJob.FAILED) {}
     else if(result == IJob._ERRORED) {}
-    else console.log("[KernelJs] ~ JOB OK(s)", ...prt_logs);
+    else logger.job("JOB OK(s)", ...prt_logs);
   }
   return result;
 };

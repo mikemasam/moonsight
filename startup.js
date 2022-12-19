@@ -1,3 +1,4 @@
+// @Deprecated -- see dev.js
 //copy this to your new project as index
 //to start 
 //#> node index.js
