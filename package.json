@@ -1,12 +1,12 @@
 {
   "type": "module",
   "name": "deba-kerneljs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "DEBA Business Kernel JS",
   "main": "index.js",
   "scripts": {
     "start": "nodemon dev.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --no-cache --runInBand --forceExit --detectOpenHandles --testTimeout=15000",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --verbose --no-cache --runInBand --forceExit --detectOpenHandles --testTimeout=15000",
     "test-watch": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --watch --no-cache --runInBand --forceExit --detectOpenHandles --testTimeout=15000"
   },
   "author": "",
