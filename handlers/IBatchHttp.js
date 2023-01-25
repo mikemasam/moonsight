@@ -1,6 +1,7 @@
 import { Request, Response, AppState, NotFound, FailedResponse, EmptyResponse, UnhandledReponse } from '../responders/index.js';
 const AsyncFn = (async () => {}).constructor;
-
+//NOTE: response is handled by handlers
+// - no processing individual responses
 export default function IBatchHttp(routes, middlewares){
   function IBatchHttpHandler(ctx, stat){
     for(const key in routes){
@@ -11,6 +12,7 @@ export default function IBatchHttp(routes, middlewares){
         throw `[KernelJs] ~ ${stat._fullPath} async handler function is required.`;
     }
     const err = e => { 
+      //drop unhandled error
       console.log(e); 
       return null; 
     };
