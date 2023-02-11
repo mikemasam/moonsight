@@ -7,6 +7,7 @@ import Enviroment from './lib/enviroment.js';
 import Router from './lib/router/index.js';
 import Doctor from './doctor/index.js';
 import UID from './lib/universal.identity.js';
+import TestRegex from './lib/testregex.js';
 import CoreNetwork, { CoreNet } from './lib/corenet/index.js';
 import { 
   UnhandledReponse, NotFound, 
@@ -106,5 +107,6 @@ export {
   UID,
   IJob,
   Doctor,
+  TestRegex
 }
 

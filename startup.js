@@ -9,6 +9,7 @@ const context = await Kernel({
   apiMount: 'api',
   middlewares: path.resolve('middlewares'),
   port: 8080,
+  nodeIdentity: 800,
   channelName: 'Test1',                    //corenet identity 
   coreHost: 'http://localhost:5000',  //for corenet client connecting to master
   mountCore: {                        //for corenet master
