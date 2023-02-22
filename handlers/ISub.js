@@ -4,7 +4,7 @@ import logger from '../lib/logger.js';
 async function listen(ctx, channels, handler){
   await ctx.net.RedisClientSubscriber.subscribe(channels, (message, channel) => {
     logger.byType('sub',`new message`, message);
-    handler(channel, JSON.parse(message));
+    handler(AppState(ctx), channel, JSON.parse(message));
   });
 }
 export default function ISub(handler, channels, opts){
