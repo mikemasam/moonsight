@@ -25,6 +25,9 @@ class AppState {
   queueJob(name, opts){
     return this.ctx.events.emit(`kernel.jobs.run.${name}`, name, opts);
   }
+  queuePub(name, payload){
+    return this.ctx.events.emit(`kernel.subpub.pub`, name, payload);
+  }
 
   //stack
   push(name, data){

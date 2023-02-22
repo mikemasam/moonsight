@@ -19,8 +19,11 @@ export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
   //throw FailedResponse({ message: "Connection rejected, invalid authentication" });
 });
 
-export const imount = IMount(async () => {
+export const imount = IMount(async (AppState) => {
+  //console.log(AppState);
   const res = UUID.entity('PAYMENT', 0)
+  AppState.queuePub("deba.market:products:changed1", { test: 1, res, text: `Connection rejected, invalid authentication " " ; : * ^ ! -- ` });
+  AppState.queuePub("deba.market:products:changed2", { test: 1, res, text: `Connection rejected, invalid authentication " " ; : * ^ ! -- ` });
   //console.log(UUID.latestVersion('1000....'));
   //console.log('UUID Entity', res);
 });

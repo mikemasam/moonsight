@@ -20,6 +20,8 @@ const kernel = await Kernel({
     test: 'testing'
   },
   logging: {
+    pub: true,
+    sub: true
     //http: true,
     //    core: true,
     //socket: true,

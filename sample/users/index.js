@@ -16,12 +16,13 @@ export const icore = ICore(async ({ socket, body, device }) => {
 // - schedule
 // - not busy
 // - 
-const job = async (AppState) => {
+const job = async (AppState, a, b, c) => {
   //CoreJob.queue("api:users", { hi: 1 });
   //return IJob.BACKOFF;
   //console.log("Job called");
   //AppState.queueJob(":api:users", { i: 0 });
   //throw new Error("112121");
+  console.log(a, b, c)
   return [IJob.OK, "Just like that"];
 }
 export const ijob = IJob(job, { seconds: 3, instant: true }, { hi: 0 });

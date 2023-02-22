@@ -16,7 +16,7 @@ import {
   Request, NoResponse
 } from './responders/index.js';
 
-import { IHttp, IJob, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
+import { IHttp, ISub, IJob, ISocket, ISocketMount, ICore, IMount, IBatchHttp } from './handlers/index.js';
 
 //system context
 let context_init = {
@@ -100,6 +100,7 @@ export {
   ICore,
   IMount,
   IBatchHttp,
+  ISub,
   CoreNet,
   Request,
   NoResponse,
