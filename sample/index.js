@@ -21,9 +21,9 @@ export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
 
 export const imount = IMount(async (AppState) => {
   //console.log(AppState);
-  const res = UUID.entity('PAYMENT', 0)
-  AppState.queuePub("deba.market:products:changed1", { test: 1, res, text: `Connection rejected, invalid authentication " " ; : * ^ ! -- ` });
-  AppState.queuePub("deba.market:products:changed2", { test: 1, res, text: `Connection rejected, invalid authentication " " ; : * ^ ! -- ` });
+  const res = UUID.basic(1);
+  AppState.queuePub("kernel:changed2", { test: 1, res, text: `Connection rejected, invalid authentication " " ; : * ^ ! -- ` });
+  AppState.queuePub("kernel:changed1", { test: 1, res, text: `Connection accepted, invalid authentication " " ; : * ^ ! -- ` });
   //console.log(UUID.latestVersion('1000....'));
   //console.log('UUID Entity', res);
 });
