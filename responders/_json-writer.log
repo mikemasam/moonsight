@@ -1,0 +1,52 @@
+import {
+  HttpRequest,
+  HttpResponse,
+  RequestLog,
+  ResponseData,
+  ResponseLog,
+  RouteLog,
+  SocketRequest,
+  SocketResponse,
+} from "../handlers/BaseHander";
+
+export default (
+  data: ResponseData,
+  logs: RouteLog = {},
+  rawData: Object = {}
+) => {
+  async function ReponseWriter(
+    req_log: RequestLog,
+    req: SocketRequest | HttpRequest,
+    res: SocketResponse | HttpResponse
+  ) {
+    //TODO: use locals:_lifetime for context & stat & startTime
+    if (res.__locals) {
+      let hooks = res.__locals.hooks.reverse();
+      while (hooks.length) {
+        const hook = hooks.pop()!;
+        const changes: any = await hook(rawData);
+        data = {
+          ...data,
+          ...changes,
+        };
+      }
+    }
+    const res_log: ResponseLog = {
+      method: req.method,
+      ip: req.ip,
+      url: req.originalUrl,
+      status: data.status || 0,
+      endTime: Date.now(),
+    };
+    logRequest(req_log, res_log, logs);
+    if (data?.status === 0) return;
+
+    if (res?.json) {
+      res.json({ ...data, success: data?.status == 200 });
+    } else if (res && res.fn) {
+      res.fn({ ...data, success: data?.status == 200 });
+    }
+  }
+  ReponseWriter.responder = true;
+  return ReponseWriter;
+};

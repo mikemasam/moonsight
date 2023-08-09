@@ -1,11 +1,12 @@
 {
-  "type": "module",
   "name": "deba-kerneljs",
   "version": "1.0.3",
   "description": "DEBA Business Kernel JS",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon dev.js",
+    "dev": "nodemon --exec ts-node dev.ts",
+    "build": "tsc",
+    "start": "node dist/dev.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --verbose --no-cache --runInBand --forceExit --detectOpenHandles --testTimeout=15000",
     "test-watch": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest --watch --no-cache --runInBand --forceExit --detectOpenHandles --testTimeout=15000"
   },
@@ -21,8 +22,14 @@
     "uuid": "^8.3.2"
   },
   "optionalDependencies": {
+    "@types/node": "^20.4.4",
     "bufferutil": "^4.0.7",
     "jest": "^29.3.1",
     "utf-8-validate": "^5.0.9"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/uuid": "^9.0.2"
   }
 }
