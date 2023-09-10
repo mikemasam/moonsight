@@ -24,15 +24,15 @@ function useAuth(socket: Socket, next: (a?: any) => void) {
       .split(" ")
       .indexOf(socket.handshake.address) > -1;
   if (allowed) {
-    logger.byType(
-      "core",
-      `CoreNet: added [${socket.handshake.query.channelName} - ${socket.handshake.address}].`
+    logger.byTypes(
+      ["core", "info", "kernel", "networking"],
+      `CoreNet: added [${socket.handshake.query.channelName} - ${socket.handshake.address}].`,
     );
     next();
   } else {
-    logger.byType(
-      "core",
-      `CoreNet: rejected [${socket.handshake.query.channelName} - ${socket.handshake.address}].`
+    logger.byTypes(
+      ["core", "info", "kernel", "networking"],
+      `CoreNet: rejected [${socket.handshake.query.channelName} - ${socket.handshake.address}].`,
     );
     next(new Error("invalid"));
   }
@@ -49,12 +49,15 @@ function useCorenetChannelTransport(socket: SocketRequestRaw) {
     const { channel, body, event } = data;
     const ctx = global.deba_kernel_ctx;
     if (ctx.net.coreIO == null) {
-      logger.kernel("ChannelTransport - Corenet not intialized");
+      logger.byTypes(
+        ["kernel", "error", "networking", "exception"],
+        "ChannelTransport - Corenet not intialized",
+      );
       return;
     }
     ctx.net.coreIO.fetchSockets().then((sockets) => {
       let consumer = sockets.find(
-        (s) => s.handshake.query.channelName == channel
+        (s) => s.handshake.query.channelName == channel,
       );
       if (!consumer) {
         const log = {
@@ -64,12 +67,28 @@ function useCorenetChannelTransport(socket: SocketRequestRaw) {
         };
         const req = makeSocketRequest(socket, event, "icore", "icore", body);
         const res: SocketResponse = makeSocketResponse(fn);
+        logger.byTypes(
+          ["error", "networking", "corenet"],
+          "passthrough event failed, channel offline, event:",
+          event,
+          ", channel:",
+          channel,
+        );
         NotFound({
           status: 503,
           message:
             "Service not available at the moment, please try again later.",
-        }).json(log, req, res);
+        })
+          .json(log, req, res)
+          .socket();
       } else {
+        logger.byTypes(
+          ["error", "networking", "corenet"],
+          "passthrough event:",
+          event,
+          ", channel:",
+          channel,
+        );
         consumer.emit(event, body, fn);
       }
     });
@@ -79,7 +98,13 @@ function useCorenetChannelTransport(socket: SocketRequestRaw) {
 function useAnyEvent(socket: SocketRequestRaw) {
   return (event: string, ...args: any[]) => {
     const ctx = global.deba_kernel_ctx;
-    if (socket.listenerCount(event) < 1) {
+    const count = socket.listenerCount(event);
+    if (count < 1) {
+      logger.byTypes(
+        ["error", "networking", "corenet"],
+        "local corenet event not found: unhandled, event:",
+        event,
+      );
       const log = {
         path: "corenet.channel.transport",
         ctx,
@@ -88,7 +113,13 @@ function useAnyEvent(socket: SocketRequestRaw) {
       const [body, fn] = args;
       const req = makeSocketRequest(socket, event, "icore", "icore", body);
       const res: SocketResponse = makeSocketResponse(fn);
-      NotFound().json(log, req, res);
+      NotFound().json(log, req, res).socket();
+    } else {
+      logger.byTypes(
+        ["corenet", "networking"],
+        "local corenet event handled,  event:",
+        event,
+      );
     }
   };
 }
@@ -96,14 +127,14 @@ function useAnyEvent(socket: SocketRequestRaw) {
 export default async function CoreSocket(
   io: Server,
   events: EventEmitter,
-  opts: AppContextOpts
+  opts: AppContextOpts,
 ) {
   io.setMaxListeners(opts.maxListeners || 20);
   const coreApi: Namespace = io.of("/");
   events.on("kernel.ready", () => {
-    logger.byType(
-      "core",
-      `CoreNet: accepting [IP's Allowed ${opts.mountCore?.allowedIPs}].`
+    logger.byTypes(
+      ["core", "kernel", "networking"],
+      `CoreNet: accepting [IP's Allowed ${opts.mountCore?.allowedIPs}].`,
     );
     coreApi.use(useAuth);
     coreApi.on("connection", (socket) => {
@@ -113,7 +144,7 @@ export default async function CoreSocket(
       });
       socket.on(
         "kernel.corenet.channel.transport",
-        useCorenetChannelTransport(moveSocketToRequestRaw(socket)!)
+        useCorenetChannelTransport(moveSocketToRequestRaw(socket)!),
       );
       socket.onAny(useAnyEvent(moveSocketToRequestRaw(socket)!));
     });
@@ -126,7 +157,7 @@ const broadcastCoreState = async (
   events: EventEmitter,
   coreApi: Namespace,
   state: string,
-  socket: Socket
+  socket: Socket,
 ) => {
   const channel = {
     name: socket.handshake.query.channelName,

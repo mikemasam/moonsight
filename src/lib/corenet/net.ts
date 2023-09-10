@@ -71,7 +71,7 @@ export default class CoreNetSelector {
   _disconnected(reason: string) {
     this.ready = false;
     logger.kernel(
-      `CoreNet: disconnected from ${getContext().opts.coreHost} - ${reason}`
+      `CoreNet: disconnected from ${getContext().opts.coreHost} - ${reason}`,
     );
   }
   _connected() {

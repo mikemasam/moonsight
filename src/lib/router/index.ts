@@ -25,7 +25,7 @@ export default async function HttpRouter() {
     else ctx.net.middlewares = [];
     const stat = await mountPath(opts, root, ctx.opts.apiBasePath);
     const res = await addRouter(ctx, stat);
-    logger.byType("loader", `Loader: ${stat.location}`, ` ~`, res);
+    logger.byType("debug", `Loader: ${stat.location}`, ` ~`, res);
     httpApp.use(root);
     httpApp.use("*", notFoundRouter() as any);
   }
@@ -35,7 +35,7 @@ export default async function HttpRouter() {
 const mountPath = async (
   opts: AppContextOpts,
   router: Router,
-  location: string
+  location: string,
 ) => {
   const fullPath = path.join(opts.apiPath);
   const stat = fs.statSync(fullPath);
@@ -57,7 +57,7 @@ const mountPath = async (
 const loadRoutes = async (
   ctx: AppContext,
   router: Router,
-  $stat: RouteStat
+  $stat: RouteStat,
 ) => {
   const routes = fs.readdirSync($stat.fullPath).map((file) => {
     const fullPath = path.join($stat.fullPath, file);
@@ -81,7 +81,7 @@ const loadRoutes = async (
       .filter((r) => r.isDirectory && !r.dynamic_route)
       .map(async (stat) => {
         return addRouter(ctx, stat);
-      })
+      }),
   );
 
   const r2 = await Promise.all(
@@ -89,7 +89,7 @@ const loadRoutes = async (
       .filter((r) => r.isFile && !r.dynamic_route)
       .map(async (stat) => {
         return addRoute(ctx, stat);
-      })
+      }),
   );
 
   const r3 = await Promise.all(
@@ -97,7 +97,7 @@ const loadRoutes = async (
       .filter((r) => r.isDirectory && r.dynamic_route)
       .map(async (stat) => {
         return addRouter(ctx, stat);
-      })
+      }),
   );
 
   const r4 = await Promise.all(
@@ -105,7 +105,7 @@ const loadRoutes = async (
       .filter((r) => r.isFile && r.dynamic_route)
       .map(async (stat) => {
         return addRoute(ctx, stat);
-      })
+      }),
   );
   let mounted_routes = [...r1, ...r2, ...r3, ...r4];
   const acc = counter();
@@ -121,12 +121,16 @@ const addRouter = async (ctx: AppContext, stat: RouteStat) => {
   const root = Router({ mergeParams: true });
   const total = await loadRoutes(ctx, root, stat);
   if (total.ihttp < 1) {
-    logger.byType("components", `Components: ${stat.location}`);
+    logger.byTypes(["components", "debug"], `Components: ${stat.location}`);
     return total;
   }
   const endpoint = stat.file.replace("[", ":").replace("]", "");
   total.ihttpmount++;
-  logger.byType("httpmount", `IHttpMount: ${stat.location}`, endpoint);
+  logger.byTypes(
+    ["httpmount", "debug"],
+    `IHttpMount: ${stat.location}`,
+    endpoint,
+  );
   stat.router.use(`/${endpoint}`, root);
   return total;
 };
@@ -147,7 +151,7 @@ const counter = (): { [key: string]: number } => {
 const addRoute = async (ctx: AppContext, stat: RouteStat) => {
   const found = counter();
   if (!stat.file.match(/\.js|\.ts$/)) {
-    logger.byType("components", `route skipped ${stat.fullPath}`);
+    logger.byTypes(["components", "debug"], `route skipped ${stat.fullPath}`);
     return found;
   }
   const routes = await loadRouteModule(stat);
@@ -155,7 +159,7 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
     const route = routes[i];
     if (route?.__ihandler == "imount") {
       found.imount++;
-      logger.byType("mount", `IMount: ${stat.location}`);
+      logger.byTypes(["mount", "debug"], `IMount: ${stat.location}`);
       route(stat);
     } else if (route?.__ihandler == "isocketmount") {
       found.isocketmount++;

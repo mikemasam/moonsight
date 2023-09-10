@@ -16,7 +16,7 @@ export const getContext = (): AppContext => {
   return global.deba_kernel_ctx;
 };
 export default async function createContext(
-  opts: KernelArgs
+  opts: KernelArgs,
 ): Promise<AppContext> {
   opts.version = await app$version(opts);
   if (opts.coreHost && opts.mountCore?.mount)
@@ -106,13 +106,17 @@ export type AppContextOptsLogging = {
   http?: boolean;
   core?: boolean;
   socket?: boolean;
-  loader?: boolean;
   error?: boolean;
   networking?: boolean;
+  corenet?: boolean;
+  info?: boolean;
   queue?: boolean;
   job?: boolean;
   kernel?: boolean;
-  [key: string]: boolean | undefined;
+  httpmount?: boolean;
+  components?: boolean;
+  format?: "simple" | "full";
+  //[key: string]: boolean | undefined;
 };
 export interface AppContextOptsSettings {
   [key: string]: any;

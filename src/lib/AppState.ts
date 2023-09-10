@@ -1,3 +1,4 @@
+import { QueueOptions } from "../handlers/BaseHander";
 import { getContext } from "../lib/context";
 
 export class AppState {
@@ -18,7 +19,7 @@ export class AppState {
   put(name: string, data: any) {
     getContext().opts.settings[name] = data;
   }
-  queue(name: string, opts?: any) {
+  queue(name: string, opts?: QueueOptions) {
     return getContext().queue.aquire(name, opts);
   }
   queueJob(name: string, opts?: any) {

@@ -18,39 +18,41 @@ import {
   makeSocketResponse,
   moveSocketToRequestRaw,
 } from "../socket/utils";
+import addHook from "./after-hook";
 const AsyncFn = (async () => null).constructor;
 type MiddlewareRouteStack = (
   req: SocketRequest,
   res: SocketResponse,
-  next: (req: SocketRequest, res: SocketResponse) => AppResponse | void
+  next: (req: SocketRequest, res: SocketResponse) => AppResponse | void,
 ) => Promise<any>;
 
 const middlewaresHandler = async (
   handler: ISocketMiddlewareHandler,
   stat: RouteStat,
-  args: any
+  args: any,
 ): Promise<MiddlewareRouteStack> => {
   return async (
     req: SocketRequest,
     res: SocketResponse,
-    next: (req: SocketRequest, res: SocketResponse) => AppResponse | void
+    next: (req: SocketRequest, res: SocketResponse) => AppResponse | void,
   ) => {
     const log = {
       path: stat.location,
       ctx: getContext(),
       startTime: Date.now(),
     };
-    return handler(CreateAppState(), req, res, args)
+    return handler(CreateAppState(), req, res, args, addHook(res))
       .then((_r) => (_r ? _r.json(log, req, res).socket() : next(req, res)))
-      .catch((err: Error) =>
-        UnhandledReponse(err).json(log, req, res).socket()
-      );
+      .catch((_r) => {
+        const $rs: AppResponse = _r.responder ? _r : UnhandledReponse(_r);
+        $rs.json(log, req, res).socket();
+      });
   };
 };
 
 export const addICoreRoute = async (
   stat: RouteStat,
-  icore: IHandler<ICoreRouteHandler>
+  icore: IHandler<ICoreRouteHandler>,
 ) => {
   if (!icore) return false;
   if (!icore.__ihandler)
@@ -67,7 +69,7 @@ export const addICoreRoute = async (
     const _fn = await middlewaresHandler(
       md.action as ISocketMiddlewareHandler,
       stat,
-      args
+      args,
     );
     attachs.push(_fn);
   }
@@ -83,7 +85,7 @@ export const addICoreRoute = async (
 const handleLocalCoreNet = async (
   endpoint: string,
   handler: ICoreRoute,
-  middlewares: MiddlewareRouteStack[]
+  middlewares: MiddlewareRouteStack[],
 ) => {
   const originalUrl = endpoint;
   getContext().net.coreIO!.on("connection", (_socket: Socket) => {
@@ -95,7 +97,7 @@ const handleLocalCoreNet = async (
         originalUrl,
         "icore",
         "icore",
-        body
+        body,
       );
       const res = makeSocketResponse(fn);
       const mds = [...middlewares, handler];
@@ -109,7 +111,7 @@ const handleLocalCoreNet = async (
 const handleRemoteCoreNet = async (
   endpoint: string,
   handler: ICoreRoute,
-  middlewares: MiddlewareRouteStack[]
+  middlewares: MiddlewareRouteStack[],
 ) => {
   const originalUrl = endpoint;
   getContext().events.on("kernel.corenet.connection", (_socket: Socket) => {
@@ -122,7 +124,7 @@ const handleRemoteCoreNet = async (
         originalUrl,
         "icore",
         "icore",
-        body
+        body,
       );
       const res = makeSocketResponse(fn);
       const mds = [...middlewares, handler];

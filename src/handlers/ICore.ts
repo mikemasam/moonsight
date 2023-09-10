@@ -18,7 +18,7 @@ export type ICoreRouteHandler = [ICoreRoute, IMiddlewareConfig[] | string[]];
 const AsyncFn = (async () => null).constructor;
 export default function ICore(
   handler: CoreRouteHandler,
-  middlewares: IMiddlewareConfig[] | string[]
+  middlewares: IMiddlewareConfig[] | string[],
 ): IHandler<ICoreRouteHandler> {
   function ICoreHandler(stat: RouteStat): ICoreRouteHandler {
     if (handler instanceof AsyncFn !== true)
@@ -33,7 +33,9 @@ export default function ICore(
         getContext().state.count++;
         handler(req, res, CreateAppState())
           .then((_r) => _r || EmptyResponse())
-          .catch((_r: Error) => UnhandledReponse(_r))
+          .catch((_r) => {
+            return _r.responder ? _r : UnhandledReponse(_r);
+          })
           .then((_r) => {
             getContext().state.count--;
             return _r.json(log, req, res).socket();

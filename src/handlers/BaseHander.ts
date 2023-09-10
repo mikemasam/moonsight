@@ -13,7 +13,7 @@ export type NetResponse = HttpResponse | SocketResponse;
 export type ISocketMountRoute = (
   req: SocketRequest,
   res: SocketResponse,
-  next: (err?: Error) => void
+  next: (err?: Error) => void,
 ) => void;
 
 export type ISocketMountConfig = {
@@ -28,23 +28,23 @@ export type IHandler<T> = {
 export type iSocketHandler = (
   req: SocketRequest,
   res: SocketResponse,
-  appState: AppState
-) => Promise<AppResponse | undefined>;
+  appState: AppState,
+) => Promise<AppResponse | void>;
 export type iRouteHandler = (
   req: HttpRequest,
   res: HttpResponse,
-  appState: AppState
-) => Promise<AppResponse | undefined>;
+  appState: AppState,
+) => Promise<AppResponse | void>;
 
 export type CoreRouteHandler = (
   req: SocketRequest,
   res: SocketResponse,
-  appState: AppState
-) => Promise<AppResponse | undefined>;
+  appState: AppState,
+) => Promise<AppResponse | void>;
 
 export type ISocketMountRouteHandler = (
   req: SocketRequest,
-  appState: AppState
+  appState: AppState,
 ) => Promise<void>;
 
 //export type IMiddlewareHandler = (
@@ -58,14 +58,14 @@ export type IHttpMiddlewareHandler = (
   req: HttpRequest,
   res: HttpResponse,
   args: any,
-  callback?: (hook: (data: any, status: ResponseStatus) => any) => void
+  callback: (hook: (data: any, status: ResponseStatus) => any) => void,
 ) => Promise<AppResponse | void>;
 export type ISocketMiddlewareHandler = (
   appState: AppState,
   req: HttpRequest | SocketRequest,
   res: HttpResponse | SocketResponse,
   args: any,
-  callback?: (hook: (data: any, status: ResponseStatus) => any) => void
+  callback: (hook: (data: any, status: ResponseStatus) => any) => void,
 ) => Promise<AppResponse | void>;
 
 export interface HttpRequestUtils {
@@ -177,3 +177,12 @@ export interface CoreResponse<T> {
   message: string;
   data: T;
 }
+export interface AppResponsePayload {
+  data: any;
+  status: number;
+  message: string;
+}
+
+export type QueueOptions = {
+  wait: boolean;
+};

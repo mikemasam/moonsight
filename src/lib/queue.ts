@@ -1,3 +1,4 @@
+import { QueueOptions } from "../handlers/BaseHander";
 import { AppContext, getContext } from "./context";
 import logger from "./logger";
 
@@ -20,17 +21,14 @@ export default class AppQueue {
       (message: string) => {
         logger.byType("queue", `new message`, message);
         this._queueLockReleased();
-      }
+      },
     );
   }
   async aquire(
     name: string,
-    _opts?: boolean | { wait: boolean }
+    _opts?: QueueOptions,
   ): Promise<false | IQueueLock> {
-    const opts = { wait: true };
-    if (_opts === true) opts.wait = true;
-    else if (_opts === false) opts.wait = false;
-    else if (_opts?.wait === false) opts.wait = false;
+    const opts: QueueOptions = { wait: true, ..._opts };
     if (!Array.isArray(getContext().opts.settings["kernel.exlusive.queue"]))
       getContext().opts.settings["kernel.exlusive.queue"] = [];
     return new Promise(async (resolve) => {
@@ -80,7 +78,7 @@ export default class AppQueue {
       .catch((err) => false);
     console.assert(
       qex,
-      "[KernelJs] ~ queue failed to set expire, set to expire"
+      "[KernelJs] ~ queue failed to set expire, set to expire",
     );
   }
   async _queueAquireLock(name: string, lockId: string) {
@@ -132,7 +130,7 @@ export default class AppQueue {
     logger.byType("queue", `queue released`, name, lockId);
     await getContext().net.RedisClient.publish(
       "deba.core.kernel.exlusive.queue",
-      JSON.stringify({ lockId, name })
+      JSON.stringify({ lockId, name }),
     );
     return endTime - startTime;
   }

@@ -2,13 +2,13 @@ import { RouteResponseOpts } from "../handlers/BaseHander";
 import AppResponse from "./lib/AppResponse";
 export default function BasicResponse(
   data: Object,
-  opts?: RouteResponseOpts
+  opts?: RouteResponseOpts,
 ): AppResponse {
-  const response = new AppResponse(data, 200, "");
+  const response = new AppResponse({ data, status: 200, message: "" });
   if (opts != undefined) {
-    response.status =
+    response.payload.status =
       opts.status == null || isNaN(opts.status) ? 200 : opts.status;
-    response.message = opts.message == null ? "" : opts.message;
+    response.payload.message = opts.message == null ? "" : opts.message;
   }
   response.rawData = data;
   return response;

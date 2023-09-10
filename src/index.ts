@@ -13,7 +13,6 @@ import { bootHttpApp } from "./lib/http";
 import bootRedis from "./lib/boot.redis";
 import UnhandledReponse from "./responders/UnhandledReponse";
 import NotFound from "./responders/NotFound";
-import PaginatedResponse from "./responders/PaginatedResponse";
 import NoResponse from "./responders/NoResponse";
 import EmptyResponse from "./responders/EmptyResponse";
 import FailedResponse from "./responders/FailedResponse";
@@ -59,7 +58,7 @@ export interface KernelArgs {
 export default async function create$kernel(
   args: KernelArgs,
   beforeHooks?: (() => Promise<any>)[],
-  afterHooks?: ((ctx: AppContext) => Promise<any>)[]
+  afterHooks?: ((ctx: AppContext) => Promise<any>)[],
 ) {
   if (beforeHooks) await Promise.all(beforeHooks.map((c) => c()));
   global.deba_kernel_ctx = await createContext(args);
@@ -75,7 +74,7 @@ export default async function create$kernel(
   }
   if (!global.deba_kernel_ctx.opts.port) {
     throw new Error(
-      `[KernelJs] ~ Invalid server port [port] = ${global.deba_kernel_ctx.opts.port}.`
+      `[KernelJs] ~ Invalid server port [port] = ${global.deba_kernel_ctx.opts.port}.`,
     );
   }
   global.deba_kernel_ctx.boot = async () => {
@@ -97,7 +96,6 @@ const Response = BasicResponse;
 export {
   UnhandledReponse,
   NotFound,
-  PaginatedResponse,
   Response, //depricated
   BasicResponse,
   EmptyResponse,

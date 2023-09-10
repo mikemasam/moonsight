@@ -16,6 +16,8 @@ import NotFound from "../../responders/NotFound";
 import EmptyResponse from "../../responders/EmptyResponse";
 import UnhandledReponse from "../../responders/UnhandledReponse";
 import HttpUtils from "../../utils/http";
+import addHook from "./after-hook";
+import AppResponse from "../../responders/lib/AppResponse";
 
 export const notFoundRouter = () => {
   const handler = RouteHandler(async () => NotFound(), "/");
@@ -24,7 +26,7 @@ export const notFoundRouter = () => {
 
 export const RouteHandler = (
   handler: iRouteHandler,
-  stat: RouteStat | string
+  stat: RouteStat | string,
 ) => {
   return (req: HttpRequest, res: HttpResponse) => {
     const log = {
@@ -42,7 +44,7 @@ export const RouteHandler = (
 const middlewaresHandler = async (
   handler: IHttpMiddlewareHandler,
   stat: RouteStat,
-  args: any
+  args: any,
 ) => {
   return (req: HttpRequest, res: HttpResponse, next: () => void) => {
     logger.byType(
@@ -50,7 +52,7 @@ const middlewaresHandler = async (
       "start middleware processing url: ",
       req.url,
       ", name: ",
-      stat.path
+      stat.path,
     );
     //TODO: use locals:_lifetime for context & stat & startTime
     const log = {
@@ -68,12 +70,12 @@ const middlewaresHandler = async (
           ", url: ",
           req.url,
           "name: ",
-          stat.path
+          stat.path,
         );
-        if (_r) _r.json(log, req, res).http();
+        if (_r) return _r.json(log, req, res).http();
         next();
       })
-      .catch((err: Error) => {
+      .catch((_r: any) => {
         logger.byType(
           "debug",
           "end middleware processing url:",
@@ -81,9 +83,10 @@ const middlewaresHandler = async (
           ", name: ",
           stat.path,
           ", error:",
-          err
+          _r,
         );
-        return UnhandledReponse(err).json(log, req, res).http();
+        const $rs: AppResponse = _r.responder ? _r : UnhandledReponse(_r);
+        $rs.json(log, req, res).http();
       });
   };
 };
@@ -91,7 +94,7 @@ const middlewaresHandler = async (
 export const addIHttpRoute = async (
   router: Router,
   stat: RouteStat,
-  ihttp: IHandler<IHttpRouteHandler>
+  ihttp: IHandler<IHttpRouteHandler>,
 ) => {
   if (!ihttp) return false;
   if (!ihttp.__ihandler)
@@ -115,14 +118,14 @@ export const addIHttpRoute = async (
     "http",
     `IHttp: ${stat.location}`,
     stat.path,
-    `[${attached.join(",")}]`
+    `[${attached.join(",")}]`,
   );
   const m = config.method as Method;
   router[m](
     `/${endpoint}`,
     prepareHttpReq(attachs),
     attachs as any,
-    handler as any
+    handler as any,
   );
 };
 type Method = "post" | "get" | "all" | "delete" | "put";
@@ -140,12 +143,6 @@ const prepareHttpReq = (attachs: any) => {
       startTime: Date.now(),
     };
     return next();
-  };
-};
-
-const addHook = (res: HttpResponse) => {
-  return (hook: (data: any, status: ResponseStatus) => Promise<void>) => {
-    res.__locals.hooks.push(hook);
   };
 };
 

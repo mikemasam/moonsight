@@ -8,6 +8,7 @@ import {
   moveSocketToRequestRaw,
 } from "../socket/utils";
 import { CoreResponse } from "../../handlers/BaseHander";
+import logger from "../logger";
 
 const reservedEvents = [
   ":api:kernel:connection", //for newly connected remote corenet clients
@@ -34,6 +35,7 @@ export default class CoreNetQuery {
 
   async query<T>(event: string, body: Object): Promise<CoreResponse<T>> {
     if (this.selector.ready === null) {
+      logger.byType("corenet", "corenet not ready, action added to queue");
       return new Promise((resolv) => {
         this.selector.queue.push(() => resolv(this._query<T>(event, body)));
       });
@@ -43,22 +45,24 @@ export default class CoreNetQuery {
 
   private async _query<T>(
     event: string,
-    body: Object
+    body: Object,
   ): Promise<CoreResponse<T>> {
     if (event && reservedEvents.includes(event))
       throw new Error(
-        `[KernelJs] ~ CoreNet query for reserved events ${event}`
+        `[KernelJs] ~ CoreNet query for reserved events ${event}`,
       );
     if (this.selector.isLocal) {
+      logger.byType("corenet", "using local corenet");
       return this.__localQuery(event, body);
     } else {
+      logger.byType("corenet", "using remote corenet");
       return this.__remoteQuery(event, body);
     }
   }
 
   private async __remoteQuery<T>(
     event: string,
-    body: Object
+    body: Object,
   ): Promise<CoreResponse<T>> {
     return new Promise(async (resolve, reject) => {
       if (!event || !this.selector.ready || !this.channel) {
@@ -67,7 +71,7 @@ export default class CoreNetQuery {
           event,
           body,
           resolve,
-          502
+          502,
         );
       } else {
         const data = { channel: this.channel, event, body };
@@ -76,28 +80,46 @@ export default class CoreNetQuery {
           data,
           (response: any) => {
             resolve(response);
-          }
+          },
         );
       }
     });
   }
   private async __localQuery<T>(
     event: string,
-    body: Object
+    body: Object,
   ): Promise<CoreResponse<T>> {
     return new Promise(async (resolve, reject) => {
-      if (!event || !this.selector.ready || !this.channel)
+      if (!event || !this.selector.ready || !this.channel) {
+        logger.byType("corenet", "invalid query params");
         return this.__handleFailed(null, event, body, resolve, 502);
+      }
       const { coreIO } = getContext().net;
       const sockets = await coreIO!.fetchSockets();
       //const data = { channel: this.channel, event, body };
       let consumer = sockets.find(
-        (s) => s.handshake.query.channelName == this.channel
+        (s) => s.handshake.query.channelName == this.channel,
       );
       if (!consumer) {
         return this.__handleFailed(null, event, body, resolve, 503);
       } else {
-        return consumer.emit(event, body, resolve);
+        logger.byType(
+          "corenet",
+          "event send: ",
+          event,
+          ", to channel: ",
+          this.channel,
+        );
+        return consumer.emit(event, body, (args: any) => {
+          logger.byType(
+            "corenet",
+            "event ack: ",
+            event,
+            ", from channel: ",
+            this.channel,
+          );
+          return resolve(args);
+        });
       }
     });
   }
@@ -107,7 +129,7 @@ export default class CoreNetQuery {
     event: string,
     body: Object,
     fn: (a: CoreResponse<T>) => void,
-    status: number = 404
+    status: number = 404,
   ) {
     const log = {
       path: "kernel.corenet.channel.transport",

@@ -4,6 +4,7 @@ import {
   IHandler,
   ISocketMiddlewareHandler,
   ISocketMountRoute,
+  ResponseStatus,
   RouteStat,
   SocketRequest,
   SocketResponse,
@@ -17,40 +18,40 @@ import {
   makeSocketResponse,
   moveSocketToRequestRaw,
 } from "../socket/utils";
+import addHook from "./after-hook";
 const AsyncFn = (async () => null).constructor;
 
 type MiddlewareRouteStack = (
   req: SocketRequest,
   res: SocketResponse,
-  next: (req: SocketRequest, res: SocketResponse) => void
+  next: (req: SocketRequest, res: SocketResponse) => void,
 ) => Promise<any>;
 
 const middlewaresHandler = (
   handler: ISocketMiddlewareHandler,
   stat: RouteStat,
-  args: Object
+  args: Object,
 ): MiddlewareRouteStack => {
   return async (
     req: SocketRequest,
     res: SocketResponse,
-    next: (req: SocketRequest, res: SocketResponse) => void
+    next: (req: SocketRequest, res: SocketResponse) => void,
   ): Promise<any> => {
     const log = {
       path: stat.location,
       opts: getContext().opts,
       startTime: Date.now(),
     };
-    return handler(CreateAppState(), req, res, args)
+    return handler(CreateAppState(), req, res, args, addHook(res))
       .then((_r) => (_r ? _r.json(log, req, res).socket() : next(req, res)))
-      .catch((err: Error) =>
-        UnhandledReponse(err).json(log, req, res).socket()
-      );
+      .catch((_r: any) => (_r.responder ? _r : UnhandledReponse(_r)))
+      .then((_r) => _r.json(log, req, res).socket());
   };
 };
 
 export const addISocketRoute = async (
   stat: RouteStat,
-  isocket: IHandler<ISocketRouteHandler>
+  isocket: IHandler<ISocketRouteHandler>,
 ) => {
   if (!isocket) return false;
   if (!isocket.__ihandler)
@@ -68,7 +69,7 @@ export const addISocketRoute = async (
     const _fn = middlewaresHandler(
       md.action as ISocketMiddlewareHandler,
       stat,
-      args
+      args,
     );
     attachs.push(_fn);
     attached.push(name);
@@ -77,7 +78,7 @@ export const addISocketRoute = async (
   logger.kernel(
     `ISocket: ${stat.location}`,
     endpoint,
-    `[${attached.join(",")}]`
+    `[${attached.join(",")}]`,
   );
   queueEndpoint(endpoint, handler, attachs);
 };
@@ -85,7 +86,7 @@ export const addISocketRoute = async (
 const queueEndpoint = async (
   endpoint: string,
   handler: ISocketRoute,
-  middlewares: MiddlewareRouteStack[]
+  middlewares: MiddlewareRouteStack[],
 ) => {
   getContext().net.socketIO.on("connection", (_socket: Socket) => {
     const socket = moveSocketToRequestRaw(_socket);
@@ -95,7 +96,7 @@ const queueEndpoint = async (
         endpoint,
         "isocket",
         "isocket",
-        data
+        data,
       );
       const res: SocketResponse = makeSocketResponse(fn);
       const mds = [...middlewares, handler];
@@ -109,7 +110,7 @@ const queueEndpoint = async (
 //socket io middleware
 export const addISocketMount = async (
   stat: RouteStat,
-  isocketmount: IHandler<ISocketMountRoute>
+  isocketmount: IHandler<ISocketMountRoute>,
 ) => {
   const originalUrl = await cleanRoutePath(stat.location);
   const handler = isocketmount(stat);
@@ -122,7 +123,7 @@ export const addISocketMount = async (
         originalUrl,
         "isocketmount",
         "isocketmount",
-        null
+        null,
       );
       const fn = (response: any) => {
         if (parseInt(String(req.query?.explain)) === 0) {
@@ -138,7 +139,7 @@ export const addISocketMount = async (
       };
       const res: SocketResponse = makeSocketResponse(fn);
       handler(req, res, next);
-    }
+    },
   );
 };
 //console.log(handler);
