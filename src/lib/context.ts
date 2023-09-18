@@ -11,10 +11,21 @@ import { createCoreIOServer, createSocketIOServer } from "./socket";
 import { Namespace } from "socket.io";
 import CoreNetSelector from "./corenet/net";
 import events from "./events";
+import logger from "./logger";
 
 export const getContext = (): AppContext => {
   return global.deba_kernel_ctx;
 };
+
+function parseEnvLoggingOpts() {
+  const logOpts: { [key: string]: boolean } = {};
+  const logEnv: undefined | string = process.env.APP_LOGGING || undefined;
+  if (logEnv == undefined) return logOpts;
+  logger.kernel("logging env loaded");
+  const parts = logEnv.split(",");
+  for (let part of parts) logOpts[part] = true;
+  return logOpts;
+}
 export default async function createContext(
   opts: KernelArgs,
 ): Promise<AppContext> {
@@ -42,6 +53,8 @@ export default async function createContext(
   }
   const basePath =
     opts.apiMount && opts.apiMount?.length ? `/${opts.apiMount}` : "";
+
+  const envLoggingOpts = parseEnvLoggingOpts();
   const appOpts: AppContextOpts = {
     channelName: opts.channelName,
     version: opts.version,
@@ -60,6 +73,7 @@ export default async function createContext(
     settings: {},
     logging: {
       ...opts.logging,
+      ...envLoggingOpts,
     },
   };
   const httpApp = createHttpApp();
