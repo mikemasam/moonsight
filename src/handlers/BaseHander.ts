@@ -71,12 +71,12 @@ export type ISocketMiddlewareHandler = (
 export interface HttpRequestUtils {
   parseBody: <T>(schema: z.ZodType<T>) => T;
 }
-export type HttpRequest = {
+export interface HttpRequest extends Request {
   _tmp?: string;
   locals: { [key: string]: any };
   utils: HttpRequestUtils;
   __type: "ihttp";
-} & Request;
+}
 
 export interface ResponseStatus {
   success: boolean;
