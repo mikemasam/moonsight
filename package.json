@@ -1,6 +1,6 @@
 {
   "name": "deba-kerneljs",
-  "version": "1.0.54",
+  "version": "1.0.56",
   "description": "DEBA Business Kernel JS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
