@@ -59,7 +59,7 @@ export async function SystemEvents() {
       getContext().ready = false;
       getContext().state.shutdown = true;
       isAliveCheck();
-    })
+    }),
   );
   getContext().cleanup.add("Events", () => {
     getContext().ready = false;

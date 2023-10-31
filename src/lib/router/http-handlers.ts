@@ -131,10 +131,10 @@ export const addIHttpRoute = async (
 type Method = "post" | "get" | "all" | "delete" | "put";
 
 const prepareHttpReq = (attachs: any) => {
-  return (_req: Request, _res: Response, next: () => void) => {
-    logger.byType("debug", "prepare req: ", _req.url, ", attachs: ", attachs);
-    const req = _req as HttpRequest;
-    const res = _res as HttpResponse;
+  return (req: Request, res: Response, next: () => void) => {
+    logger.byType("debug", "prepare req: ", req.url, ", attachs: ", attachs);
+    //const req = _req as HttpRequest;
+    //const res = _res as HttpResponse;
     req.utils = HttpUtils(req, res);
     req.__type = "ihttp";
     req.locals = {};

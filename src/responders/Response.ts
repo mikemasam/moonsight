@@ -1,7 +1,7 @@
 import { RouteResponseOpts } from "../handlers/BaseHander";
 import AppResponse from "./lib/AppResponse";
 export default function BasicResponse(
-  data: Object,
+  data: Object | string | number | null | boolean,
   opts?: RouteResponseOpts,
 ): AppResponse {
   const response = new AppResponse({ data, status: 200, message: "" });

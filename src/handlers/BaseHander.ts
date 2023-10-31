@@ -1,12 +1,42 @@
 import { Request, Response, Router } from "express";
 import { AppContext } from "../lib/context";
 import { Socket } from "socket.io";
-import { Handshake } from "socket.io/dist/socket";
+//import { Handshake } from "socket.io/dist/socket";
 import { ParsedUrlQuery } from "querystring";
 import { AppState } from "../lib/AppState";
 import AppResponse from "../responders/lib/AppResponse";
 import z from "zod";
 
+declare global {
+  namespace Express {
+    export interface Request {
+      _tmp?: string;
+      locals: { [key: string]: any };
+      utils: HttpRequestUtils;
+      __type: "ihttp";
+    }
+    export interface Response {
+      __locals: {
+        hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
+        startTime: number;
+      };
+    }
+  }
+}
+declare module "socket.io" {
+  export interface Socket {
+    locals: { [key: string]: any };
+  }
+}
+declare module "socket.io-client" {
+  export interface Socket {
+    locals: { [key: string]: any };
+  }
+}
+export type SocketRequestRaw = Socket;
+
+export type HttpRequest = Request;
+export type HttpResponse = Response;
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;
 
@@ -71,31 +101,15 @@ export type ISocketMiddlewareHandler = (
 export interface HttpRequestUtils {
   parseBody: <T>(schema: z.ZodType<T>) => T;
 }
-export interface HttpRequest extends Request {
-  _tmp?: string;
-  locals: { [key: string]: any };
-  utils: HttpRequestUtils;
-  __type: "ihttp";
-}
 
 export interface ResponseStatus {
   success: boolean;
   message: string;
 }
-export interface HttpResponse extends Response {
-  __locals: {
-    hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
-    startTime: number;
-  };
-}
-
-export interface SocketRequestRaw extends Socket {
-  locals: { [key: string]: any };
-}
 
 export type SocketRequest = {
   socket: SocketRequestRaw | null;
-  handshake: Handshake | null;
+  handshake: any | null;
   query: ParsedUrlQuery | null;
   ip: string;
   originalUrl: string;

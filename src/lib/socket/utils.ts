@@ -12,7 +12,7 @@ export const makeSocketRequest = (
   method: "icore" | "isocket" | "isocketmount",
   __type: "icore" | "isocket" | "isocketmount",
   body: any,
-  ip?: string
+  ip?: string,
 ) => {
   const _ip: string = ip ?? (socket != null ? socket.handshake?.address : "");
   const req: SocketRequest = {
@@ -37,16 +37,16 @@ export const makeSocketResponse = (fn: (content: any) => void) => {
 
 export const moveSocketToRequestRaw = (
   socket: ServerSocket | ClientSocket | null,
-  ip?: string
+  ip?: string,
 ): SocketRequestRaw | null => {
   if (socket == null) return null;
-  const _socket = socket as SocketRequestRaw;
+  //const _socket = socket as SocketRequestRaw;
   let _ip: string = "";
   if ((socket as ServerSocket).handshake) {
     _ip = (socket as ServerSocket).handshake.address;
   } else {
     _ip = ip!!;
   }
-  _socket.locals = { ip: _ip, ..._socket?.locals };
-  return _socket;
+  socket.locals = { ip: _ip, ...socket?.locals };
+  return socket as SocketRequestRaw;
 };
