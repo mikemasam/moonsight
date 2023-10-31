@@ -39,14 +39,16 @@ export default class JsonResponder {
     await this.postHooks();
     const res_log = this.makeLog();
     logRequest(this.req_log, res_log, this.route_log);
-    (this.res as SocketResponse).fn(this.responsePayload());
+    const res = this.res as SocketResponse;
+    if (res.fn) res.fn(this.responsePayload());
   }
   async http() {
     if (this.appRes.payload.status == -1) return;
     await this.postHooks();
     const res_log = this.makeLog();
     logRequest(this.req_log, res_log, this.route_log);
-    (this.res as HttpResponse).json(this.responsePayload());
+    const res = this.res as HttpResponse;
+    if (res) res.json(this.responsePayload());
   }
   makeLog(): ResponseLog {
     return {

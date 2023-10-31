@@ -18,7 +18,7 @@ export const makeSocketRequest = (
   const req: SocketRequest = {
     method: method,
     handshake: socket == null ? null : socket.handshake,
-    query: socket == null ? null : socket?.handshake.query,
+    query: socket == null ? null : socket?.handshake?.query,
     socket: socket,
     __type: __type,
     body,

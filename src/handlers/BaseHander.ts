@@ -119,7 +119,7 @@ export type SocketRequest = {
 };
 
 export type SocketResponse = {
-  fn: (arg: any) => void;
+  fn?: (arg: any) => void;
   __locals: {
     hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
     startTime: number;

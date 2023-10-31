@@ -70,7 +70,7 @@ export default async function createContext(
     port: opts.port,
     shutdownTimeout: opts.shutdownTimeout || 30,
     mountCore,
-    settings: {},
+    settings: opts.settings,
     logging: {
       ...opts.logging,
       ...envLoggingOpts,

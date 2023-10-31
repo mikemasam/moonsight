@@ -16,7 +16,7 @@ type IJobConfig = {
 export default function IJob(
   handler: IJobHandler,
   opts: IJobConfig,
-  args: Object
+  args: Object,
 ) {
   function IJobHandler(stat: RouteStat, name: string) {
     if (handler instanceof AsyncFn !== true)
@@ -56,7 +56,7 @@ export default function IJob(
       `kernel.jobs.run.${name}`,
       (job_name: string, job_args: Object) => {
         runJob(handler, job_args || {}, jobstate).then(onResult);
-      }
+      },
     );
   }
   IJobHandler.__ihandler = "ijob";
@@ -74,7 +74,7 @@ type IJobHandler = (state: AppState, args: Object) => Promise<[number, string]>;
 const runJob = async (
   handler: IJobHandler,
   args: Object,
-  jobstate: JobState
+  jobstate: JobState,
 ) => {
   if (getContext().state.corenetReady === false) {
     logger.job("corenet not ready");
@@ -83,12 +83,12 @@ const runJob = async (
   const lock = await getContext().queue.aquire(jobstate.name, { wait: false });
   if (!lock) return parseResponse(IJob.BUSY, 0, jobstate);
   getContext().state.count++;
-  logger.job("JOB RUNNING :", name);
+  logger.job("JOB RUNNING :", jobstate.name);
   const res: number | [number] | [number, string] = await handler(
     CreateAppState(),
-    args
+    args,
   ).catch((err) => {
-    logger.job("JOB ERRORED :", name, err);
+    logger.job("JOB ERRORED :", jobstate.name, err);
     return [IJob._ERRORED, err];
   });
   getContext().state.count--;
@@ -99,7 +99,7 @@ const runJob = async (
 const parseResponse = async (
   res: [number, string] | number | [number],
   lockTime: number,
-  jobstate: JobState
+  jobstate: JobState,
 ) => {
   const [result, message] = Array.isArray(res) ? res : [res, ""];
   const msg = message ? `+ {${message}} ${lockTime}ms` : `+ ${lockTime}ms`;
