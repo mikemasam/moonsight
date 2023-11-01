@@ -10,13 +10,13 @@ type JobState = {
   name: string;
 };
 type IJobConfig = {
-  seconds: number;
-  instant: boolean;
+  seconds?: number;
+  instant?: boolean;
 };
 export default function IJob(
   handler: IJobHandler,
   opts: IJobConfig,
-  args: Object,
+  args?: Object,
 ) {
   function IJobHandler(stat: RouteStat, name: string) {
     if (handler instanceof AsyncFn !== true)

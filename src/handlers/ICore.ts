@@ -18,7 +18,7 @@ export type ICoreRouteHandler = [ICoreRoute, IMiddlewareConfig[] | string[]];
 const AsyncFn = (async () => null).constructor;
 export default function ICore(
   handler: CoreRouteHandler,
-  middlewares: IMiddlewareConfig[] | string[],
+  middlewares: IMiddlewareConfig[] | string[] | undefined,
 ): IHandler<ICoreRouteHandler> {
   function ICoreHandler(stat: RouteStat): ICoreRouteHandler {
     if (handler instanceof AsyncFn !== true)
@@ -41,7 +41,7 @@ export default function ICore(
             return _r.json(log, req, res).socket();
           });
       },
-      middlewares,
+      middlewares || [],
     ];
   }
 

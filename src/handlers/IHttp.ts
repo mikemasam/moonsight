@@ -24,13 +24,13 @@ type IHttpRoute = (req: HttpRequest, res: HttpResponse) => void;
 export type IHttpRouteHandler = [
   IHttpConfig,
   IHttpRoute,
-  (IMiddlewareConfig | string)[]
+  (IMiddlewareConfig | string)[] | undefined,
 ];
 function IHttpBasic(
   handler: iRouteHandler,
   middlewares: Middlewares,
   config?: IHttpConfig,
-  method?: IHttpMethod
+  method?: IHttpMethod,
 ): IHandler<IHttpRouteHandler> {
   if (config == undefined) config = { method: "all" };
   if (method != undefined) config.method = method;
@@ -80,32 +80,32 @@ type Middlewares = (string | IMiddlewareConfig)[];
 const IHttpPost = (
   handler: iRouteHandler,
   middlewares: Middlewares,
-  config?: IHttpConfig
+  config?: IHttpConfig,
 ): IHandler<IHttpRouteHandler> => {
   return IHttpBasic(handler, middlewares, config, "post");
 };
 const IHttpGet = (
   handler: iRouteHandler,
   middlewares: Middlewares,
-  config?: IHttpConfig
+  config?: IHttpConfig,
 ): IHandler<IHttpRouteHandler> =>
   IHttpBasic(handler, middlewares, config, "get");
 const IHttpDelete = (
   handler: iRouteHandler,
   middlewares: Middlewares,
-  config?: IHttpConfig
+  config?: IHttpConfig,
 ): IHandler<IHttpRouteHandler> =>
   IHttpBasic(handler, middlewares, config, "delete");
 const IHttpPut = (
   handler: iRouteHandler,
   middlewares: Middlewares,
-  config?: IHttpConfig
+  config?: IHttpConfig,
 ): IHandler<IHttpRouteHandler> =>
   IHttpBasic(handler, middlewares, config, "put");
 const IHttp = (
   handler: iRouteHandler,
   middlewares: Middlewares,
-  config?: IHttpConfig
+  config?: IHttpConfig,
 ): IHandler<IHttpRouteHandler> =>
   IHttpBasic(handler, middlewares, config, "all");
 export default IHttp;
