@@ -10,9 +10,7 @@ const TestRegex = {
   },
   testname: (text: string): boolean => {
     if (!text) return false;
-    return /(^(\w|\d|\s|\_|\.|\*|\\|\/|\[|\]|\>|\<|\=|\"|\)|\(|\{|\}|\,|\-){1,100}$)/.test(
-      text,
-    );
+    return /(^[\s\S]{1,150}$)/.test(text);
   },
   testdesc: (text: string): boolean => {
     if (!text) return false;
