@@ -14,13 +14,13 @@ const TestRegex = {
   },
   testdesc: (text: string): boolean => {
     if (!text) return false;
-    return /(^[\s\S]{1,1000}$)/.test(text);
+    return /(^[\s\S]{1,5000}$)/.test(text);
   },
   cleanphone: (bare_phone: string) => {
     return `${(bare_phone.indexOf("0") == 0
       ? bare_phone.substring(1)
       : bare_phone
-    ).replace(/[\s+-]/, "")}`;
+    ).replace(/[\s+-]/g, "")}`;
   },
 };
 
