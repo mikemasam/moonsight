@@ -10,6 +10,7 @@ import CreateAppState, { AppState } from "../lib/AppState";
 import FailedResponse from "../responders/FailedResponse";
 import { Response } from "..";
 import logger from "../lib/logger";
+import { IHttpConfig } from "./IHttp";
 const AsyncFn = (async () => null).constructor;
 //NOTE: response is handled by handlers
 // - no processing individual responses
@@ -25,8 +26,10 @@ type BatchRoute<T> = (
 
 export default function IBatchHttp(
   routes: { [key: string]: BatchRoute<string> },
-  middlewares: IMiddlewareConfig[]
+  middlewares: IMiddlewareConfig[],
+  config?: IHttpConfig,
 ) {
+  if (config == undefined) config = { method: "post" };
   function IBatchHttpHandler(stat: RouteStat) {
     for (const key in routes) {
       const route = routes[key];
@@ -40,6 +43,7 @@ export default function IBatchHttp(
       return null;
     };
     return [
+      config,
       (req: HttpRequest, res: HttpResponse) => {
         const { startTime } = res.__locals;
         const log = {

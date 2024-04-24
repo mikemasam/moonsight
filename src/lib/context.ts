@@ -29,6 +29,7 @@ function parseEnvLoggingOpts() {
 export default async function createContext(
   opts: KernelArgs,
 ): Promise<AppContext> {
+  if(typeof opts != "object") throw new Error("invalid object type")
   opts.version = await app$version(opts);
   if (opts.coreHost && opts.mountCore?.mount)
     throw "[KernelJs] ~ Kernel failed to start, [coreMount and coreHost] only one is required.";
@@ -129,6 +130,7 @@ export type AppContextOptsLogging = {
   kernel?: boolean;
   httpmount?: boolean;
   components?: boolean;
+  app?: Record<string, boolean>;
   format?: "simple" | "full";
   //[key: string]: boolean | undefined;
 };

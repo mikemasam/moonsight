@@ -1,21 +1,21 @@
-import Kernel from "./index";
+import Kernel from "./src/index";
 import path from "path";
 Kernel({
   host: "localhost",
   version: "1.0.0",
   autoBoot: true,
-  coreHost: "localhost:5000",
   port: 3003,
   mocking: false,
-  apiPath: path.resolve("sample"),
+  apiPath: path.resolve("dev/api"),
   apiMount: "api",
-  apiMiddlewares: path.resolve("middlewares"),
+  apiMiddlewares: path.resolve("dev/middlewares"),
   channelName: "test",
   nodeIdentity: "111",
+  //coreHost: "localhost:5000",
   mountCore: {
     allowedIPs: "127.0.0.1, 0.0.0.0, 172.27.208.1",
     port: 5555,
-    mount: false,
+    mount: true,
   },
   redis: {
     url: "redis://localhost:6379",
@@ -24,9 +24,15 @@ Kernel({
     test: "testing",
   },
   logging: {
-    pub: true,
-    sub: true,
-    all: true,
+  //  pub: true,
+    //sub: true,
+    //all: true,
+    kernel: true,
+    job: true,
+    app: {
+      user: true 
+    },
+    format: "simple"
   },
 }).then((e) => {
   //console.log(e);

@@ -1,8 +1,4 @@
-import { FailedResponse, ICore, ISub, Response } from "../..";
-import IHttp from "../../handlers/IHttp";
-import ISocket from "../../handlers/ISocket";
-import { AppState } from "../../lib/AppState";
-import { CoreNet } from "../../lib/corenet";
+import { AppState, CoreNet, FailedResponse, ICore, IHttp, ISocket, ISub, Response } from "../../../src";
 
 const ihttp = IHttp(async () => {
   return FailedResponse();

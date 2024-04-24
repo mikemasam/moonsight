@@ -1,4 +1,4 @@
-import { IBatchHttp } from "..";
+import { IBatchHttp } from "../../src";
 const http1 = async (params: any) => {
   return { name: "this is a http" };
 };

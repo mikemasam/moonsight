@@ -1,14 +1,15 @@
-import { CoreNet, ICore, ISocket, Response } from "../../..";
-import IHttp from "../../../handlers/IHttp";
+import { IHttp, IMount, CoreNet, ICore, ISocket, Response } from "../../../src";
 
-export const ihttp = IHttp(
-  async (req) => {
-    console.log(req.params);
-    console.log(req.query);
-    return Response({ name: "this is name " });
-  },
-  ["http.auth"]
-);
+export const loader = IMount(async (a, { path }) => {
+  //console.log('loaded ===+++|||>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=> ', path);
+}, []);
+
+export const ihttp = IHttp(async (req) => {
+  console.log(req.params);
+  console.log(req.query);
+  console.log(req.body);
+  return Response({ body: req.body, name: "this is name " });
+}, []);
 
 export const mobileitems = ISocket(
   async ({ socket, body }) => {

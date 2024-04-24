@@ -98,7 +98,7 @@ export const addIHttpRoute = async (
 ) => {
   if (!ihttp) return false;
   if (!ihttp.__ihandler)
-    throw `[KernelJs] ~ ${stat.fullPath} http route doesn't return async IHttp handler.`;
+    throw new Error(`[KernelJs] ~ ${stat.fullPath} http route doesn't return async IHttp handler.`);
   const [config, handler, middlewares = []] = ihttp(stat);
   const attachs = [];
   const attached = [];
@@ -106,7 +106,7 @@ export const addIHttpRoute = async (
     const name = typeof middleware == "string" ? middleware : middleware?.name;
     const md = getContext().net.middlewares.find((m) => m.name == name);
     if (md == null) {
-      throw `[KernelJs] ~ Unknown middleware [${name}] ~ ${stat.location}`;
+      throw new Error(`[KernelJs] ~ Unknown middleware [${name}] ~ ${stat.location}`);
     }
     const args = typeof middleware == "string" ? {} : middleware;
     const _fn = await middlewaresHandler(md.action, stat, args);
@@ -121,6 +121,9 @@ export const addIHttpRoute = async (
     `[${attached.join(",")}]`,
   );
   const m = config.method as Method;
+  if (!m) {
+    throw new Error(`[KernelJs] ~ invalid config ~ ${stat.location}`);
+  }
   router[m](
     `/${endpoint}`,
     prepareHttpReq(attachs),

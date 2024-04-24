@@ -1,7 +1,14 @@
-import { IHttp, IMount, ISocket, ISocketMount, Response } from "../index";
-import UUID from "../lib/universal.identity";
+import {
+  HttpRequest,
+  IHttp,
+  IMount,
+  ISocket,
+  ISocketMount,
+  Response,
+  UUID,
+} from "../../src/";
 
-export const ihttp = IHttp(async (req, res, AppState) => {
+export const ihttp = IHttp(async (req: HttpRequest, res, AppState) => {
   const lock = await AppState.queue("test");
   if (lock) setTimeout(() => lock.clear(), 5 * 1000);
   return Response({ lock, name: "this is a name" });
@@ -13,7 +20,7 @@ export const isocket = ISocket(
     console.log(body);
     return Response({ body, name: "this is name " });
   },
-  ["socket.auth"]
+  ["socket.auth"],
 );
 
 export const isocketmount = ISocketMount(async ({ socket, ...req }) => {

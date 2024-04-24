@@ -1,6 +1,4 @@
-import { ICore, IJob, Response } from "../..";
-import ISocket from "../../handlers/ISocket";
-import { AppState } from "../../lib/AppState";
+import { AppLogger, AppState, ICore, IJob, ISocket, Response } from "../../../src";
 
 export const isocket = ISocket(
   async ({ socket, body }) => {
@@ -31,7 +29,7 @@ const job = async (
   //console.log("Job called");
   //AppState.queueJob(":api:users", { i: 0 });
   //throw new Error("112121");
-  console.log(c);
+  AppLogger.log("user", "users index job")
   return [IJob.OK, "Just like that"];
 };
 export const ijob = IJob(job, { seconds: 3, instant: true }, { hi: 0 });

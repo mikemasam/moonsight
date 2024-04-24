@@ -1,7 +1,5 @@
 import { Request, Response, Router } from "express";
-import { AppContext } from "../lib/context";
 import { Socket } from "socket.io";
-//import { Handshake } from "socket.io/dist/socket";
 import { ParsedUrlQuery } from "querystring";
 import { AppState } from "../lib/AppState";
 import AppResponse from "../responders/lib/AppResponse";
@@ -77,12 +75,6 @@ export type ISocketMountRouteHandler = (
   appState: AppState,
 ) => Promise<void>;
 
-//export type IMiddlewareHandler = (
-//  ctx: AppContext,
-//  req: Request,
-//  res: Response
-//) => void;
-//
 export type IHttpMiddlewareHandler = (
   appState: AppState,
   req: HttpRequest,

@@ -3,6 +3,7 @@ import Router from "./lib/router/index";
 import UID from "./lib/universal.identity";
 import TestRegex from "./lib/testregex";
 import CoreNetwork, { CoreNet } from "./lib/corenet/index";
+import { AppLogger } from "./lib/logger"
 import createContext, {
   AppContext,
   AppContextOptsLogging,
@@ -122,6 +123,7 @@ export {
   UUID,
   UID,
   z,
+  AppLogger
 };
 
 export type * from "./handlers/BaseHander";

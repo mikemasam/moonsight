@@ -1,15 +1,13 @@
-import { Response, IHttp, ISocket, CoreNet, ICore } from "../../..";
-import { AppContext } from "../../../lib/context";
+import { CoreNet, ICore, IHttp, ISocket, Response } from "../../../../src";
 
-//TODO: test mount
-export default async function mount(ctx: AppContext, opts: any) {
-  console.log("should fix this", opts);
-}
-
-export const ihttp = IHttp(async (req) => {
-  console.log(req.query);
-  return Response({ name: "this is name " });
-}, []);
+export const ihttp = IHttp(
+  async (req) => {
+    console.log(req.params);
+    console.log(req.query);
+    return Response({ name: "this is name " });
+  },
+  ["http.auth"]
+);
 
 export const mobileitems = ISocket(
   async ({ socket, body }) => {

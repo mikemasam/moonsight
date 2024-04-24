@@ -1,6 +1,19 @@
 import { AppContext, AppContextOptsLogging } from "./context";
 
+export interface TAppLogger {
+  log: (type: string, ...args: any[]) => void;
+}
+
+export const AppLogger: TAppLogger = {
+  log: (type: string, ...args: any[]) => {
+    const appl: any = logger.opts()["app"];
+    if(appl[type]){
+      logger.byType("app", `[${type}]`, ...args);
+    }
+  },
+}
 export interface Logger {
+  opts: () => Record<string, boolean | string | Record<string, boolean>>,
   kernel: (...args: any[]) => void;
   job: (...args: any[]) => void;
   byType: (logType: string, ...args: any[]) => boolean;
@@ -10,6 +23,10 @@ export interface Logger {
 }
 
 const logger: Logger = {
+  opts: () => {
+    const context = global.deba_kernel_ctx as AppContext;
+    return context.opts.logging as Record<string, boolean | string | Record<string, boolean>>;
+  },
   kernel: (...args) => {
     logger.byType("kernel", ...args);
   },
@@ -18,18 +35,15 @@ const logger: Logger = {
   },
   byType: (logType: string, ...args): boolean => {
     let date = new Date().toLocaleString();
-    const context = global.deba_kernel_ctx as AppContext;
-    //console.log(`[$app:$type] $log $date`);
-    const opts = context.opts.logging as Record<string, boolean>;
-    const logging = context.opts.logging;
-    let valid = logging.all;
+    const opts = logger.opts();
+    let valid  = opts.all;
     valid = valid && opts[logType] !== false;
     valid = valid || opts[logType];
     if (!valid) return false;
-    if (logging.format == "simple") {
-      console.log(`${logType}>`, ...args);
+    if (opts.format == "simple") {
+      console.log(`${limitString(logType, 7)}>`, ...args);
     } else {
-      const format = `#[${date}][KernelJs:${logType}]`;
+      const format = `#[${date}][KernelJs:${limitString(logType, 7)}]`;
       console.log(format, ...args);
     }
     return true;
@@ -48,4 +62,5 @@ const logger: Logger = {
   },
 };
 
+const limitString = (str: string, maxLength: number) => str.length <= maxLength ? str.padEnd(maxLength, '-') : str.substring(0, maxLength - 3) + '...';
 export default logger;

@@ -1,8 +1,9 @@
-import { FailedResponse } from '../responders/index.js';
+import { FailedResponse } from "../../src";
+
 export default async (state, req, res, args, addHook) => {
   console.log(state.get('test'));
   addHook(paginationHook);
-  //return FailedResponse({ status: 401, message: 'Auth failed' });
+  return FailedResponse({ status: 401, message: 'Auth failed' });
 }
 
 const paginationHook = async (data) => {

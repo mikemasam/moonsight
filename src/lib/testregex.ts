@@ -22,6 +22,9 @@ const TestRegex = {
       : bare_phone
     ).replace(/[\s+-]/g, "")}`;
   },
+  uniqueStr: (...strs: String[]): String => {
+    return strs.join("").split('').sort().join('');
+  }
 };
 
 export default TestRegex;

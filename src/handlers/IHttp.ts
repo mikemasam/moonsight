@@ -16,7 +16,7 @@ import logger from "../lib/logger";
 const AsyncFn = (async () => null).constructor;
 
 type IHttpMethod = "post" | "get" | "all" | "put" | "delete";
-type IHttpConfig = {
+export type IHttpConfig = {
   minVersion?: string;
   method?: IHttpMethod;
 };
