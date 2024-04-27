@@ -110,10 +110,12 @@ const loadRoutes = async (
   let mounted_routes = [...r1, ...r2, ...r3, ...r4];
   const acc = counter();
   const keys = Object.keys(acc);
-  for (let o = 0; o < mounted_routes.length; o++)
+  for (let o = 0; o < mounted_routes.length; o++){
     for (let i = 0; i < keys.length; i++) {
       acc[keys[i]] += mounted_routes[o][keys[i]];
     }
+  }
+  logger.byType("internal",  acc)
   return acc;
 };
 
@@ -121,6 +123,7 @@ const addRouter = async (ctx: AppContext, stat: RouteStat) => {
   const root = Router({ mergeParams: true });
   const total = await loadRoutes(ctx, root, stat);
   if (total.ihttp < 1) {
+    logger.byType("internal",  stat, total)
     logger.byTypes(["components", "debug"], `Components: ${stat.location}`);
     return total;
   }
