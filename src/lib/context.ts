@@ -130,6 +130,7 @@ export type AppContextOptsLogging = {
   kernel?: boolean;
   httpmount?: boolean;
   components?: boolean;
+  internal?: boolean;
   app?: Record<string, boolean>;
   format?: "simple" | "full";
   //[key: string]: boolean | undefined;
