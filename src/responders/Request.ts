@@ -11,6 +11,7 @@ export class RequestState {
   }
 
   get<T>(name: string): T | undefined {
+    if(!this.current_req) return undefined;
     const _type = this.current_req.__type;
     if (_type == "ihttp") {
       return (this.current_req as HttpRequest).locals[name];
@@ -25,6 +26,7 @@ export class RequestState {
   }
 
   put(name: string, data: any) {
+    if(!this.current_req) return undefined;
     const _type = this.current_req.__type;
     if (_type == "ihttp") {
       (this.current_req as HttpRequest).locals[name] = data;
