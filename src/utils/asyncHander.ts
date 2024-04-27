@@ -1,4 +1,4 @@
-export function makeAsyncHandler(handler){
+export function makeAsyncHandler(handler:any){
   return async (...args: any) => {
     try {
       return await Promise.resolve(handler(...args));
