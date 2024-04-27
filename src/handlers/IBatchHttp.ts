@@ -11,7 +11,7 @@ import FailedResponse from "../responders/FailedResponse";
 import { Response } from "..";
 import logger from "../lib/logger";
 import { IHttpConfig } from "./IHttp";
-const AsyncFn = (async () => null).constructor;
+import { makeAsyncHandler } from "../utils/asyncHander";
 //NOTE: response is handled by handlers
 // - no processing individual responses
 
@@ -21,7 +21,7 @@ type BatchRouteBody<T> = {
 type BatchRoute<T> = (
   body: BatchRouteBody<T>,
   reqState: RequestState,
-  appState: AppState
+  appState: AppState,
 ) => Promise<Object>;
 
 export default function IBatchHttp(
@@ -35,8 +35,6 @@ export default function IBatchHttp(
       const route = routes[key];
       if (key == "com")
         throw `[KernelJs] ~ ${stat.fullPath} 'com' route is not available.`;
-      if (route instanceof AsyncFn !== true)
-        throw `[KernelJs] ~ ${stat.fullPath} async handler function is required.`;
     }
     const err = (e: Error) => {
       logger.handledExeception(e);
@@ -57,25 +55,29 @@ export default function IBatchHttp(
         const body = req.body;
         const state = new RequestState(req);
         const results: { [key: string]: any } = {};
-        const tasks = [];
+        const tasks: any = [];
         const com = body["com"];
         for (const key in body) {
           if (key == "com") continue;
           const route = routes[key];
           if (route) {
             tasks.push(
-              route({ ...com, ...body[key] }, state, CreateAppState())
-                ?.catch(err)
+              makeAsyncHandler(route)(
+                { ...com, ...body[key] },
+                state,
+                CreateAppState(),
+              )
+                .catch(err)
                 .then((result) => {
                   results[key] = result;
-                })
+                }),
             );
           } else {
             results[key] = null;
           }
         }
         Promise.all(tasks).then(() =>
-          Response(results).json(log, req, res).http()
+          Response(results).json(log, req, res).http(),
         );
         getContext().state.count--;
       },

@@ -14,7 +14,7 @@ Kernel({
   //coreHost: "localhost:5000",
   mountCore: {
     allowedIPs: "127.0.0.1, 0.0.0.0, 172.27.208.1",
-    port: 5555,
+    port: 5551,
     mount: true,
   },
   redis: {

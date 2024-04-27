@@ -2,6 +2,7 @@ import CreateAppState from "../lib/AppState";
 import { getContext } from "../lib/context";
 import EmptyResponse from "../responders/EmptyResponse";
 import UnhandledReponse from "../responders/UnhandledReponse";
+import { makeAsyncHandler } from "../utils/asyncHander";
 import {
   CoreRouteHandler,
   IHandler,
@@ -15,14 +16,12 @@ import {
 export type ICoreRoute = (req: SocketRequest, res: SocketResponse) => void;
 export type ICoreRouteHandler = [ICoreRoute, IMiddlewareConfig[] | string[]];
 
-const AsyncFn = (async () => null).constructor;
 export default function ICore(
-  handler: CoreRouteHandler,
+  async_handler: CoreRouteHandler,
   middlewares: IMiddlewareConfig[] | string[] | undefined,
 ): IHandler<ICoreRouteHandler> {
+  const handler = makeAsyncHandler(async_handler);
   function ICoreHandler(stat: RouteStat): ICoreRouteHandler {
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} ICore async handler function is required.`;
     return [
       (req, res) => {
         const log: RequestLog = {

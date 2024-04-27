@@ -13,6 +13,7 @@ import FailedResponse from "../responders/FailedResponse";
 import CreateAppState from "../lib/AppState";
 import EmptyResponse from "../responders/EmptyResponse";
 import UnhandledReponse from "../responders/UnhandledReponse";
+import { makeAsyncHandler } from "../utils/asyncHander";
 
 type ISocketConfig = {
   minVersion: string | undefined;
@@ -24,15 +25,12 @@ export type ISocketRouteHandler = [
   IMiddlewareConfig[] | string[]
 ];
 export default function ISocket(
-  handler: iSocketHandler,
+  async_handler: iSocketHandler,
   middlewares: IMiddlewareConfig[] | string[],
   config?: ISocketConfig
 ): IHandler<ISocketRouteHandler> {
+  const handler = makeAsyncHandler(async_handler)
   function ISocketHandler(stat: RouteStat): ISocketRouteHandler {
-    const AsyncFn = (async () => null).constructor;
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} ISocket async handler function is required.`;
-
     return [
       (req: SocketRequest, res: SocketResponse) => {
         const log = {

@@ -11,20 +11,19 @@ import {
 import FailedResponse from "../responders/FailedResponse";
 import CreateAppState from "../lib/AppState";
 import UnhandledReponse from "../responders/UnhandledReponse";
+import { makeAsyncHandler } from "../utils/asyncHander";
 
-const AsyncFn = (async () => null).constructor;
 export default function ISocketMount(
-  handler: ISocketMountRouteHandler,
+  async_handler: ISocketMountRouteHandler,
   _?: unknown,
-  config?: ISocketMountConfig
+  config?: ISocketMountConfig,
 ) {
+  const handler = makeAsyncHandler(async_handler);
   function ISocketMountHandler(stat: RouteStat): ISocketMountRoute {
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} ISocketMount async handler function is required.`;
     return async (
       req: SocketRequest,
       res: SocketResponse,
-      next: (err?: Error) => void
+      next: (err?: Error) => void,
     ) => {
       const log = {
         path: stat.location,

@@ -2,10 +2,12 @@ import { Router } from "express";
 import { getContext } from "../lib/context";
 import CreateAppState, { AppState } from "../lib/AppState";
 import { RouteStat } from "./BaseHander";
+import { makeAsyncHandler } from "../utils/asyncHander";
 const AsyncFn = (async () => null).constructor;
 type IMountArgs = { path: string; router: Router };
 type IMountHandler = (state: AppState, args: IMountArgs) => Promise<any>;
-export default function IMount(handler: IMountHandler, opts?: string[]) {
+export default function IMount(async_handler: IMountHandler, opts?: string[]) {
+  const handler = makeAsyncHandler(async_handler);
   function IMountHandler(stat: RouteStat) {
     if (handler instanceof AsyncFn !== true)
       throw `[KernelJs] ~ ${stat.fullPath} IMount async handler function is required.`;

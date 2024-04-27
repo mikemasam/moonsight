@@ -13,7 +13,7 @@ import CreateAppState from "../lib/AppState";
 import EmptyResponse from "../responders/EmptyResponse";
 import UnhandledReponse from "../responders/UnhandledReponse";
 import logger from "../lib/logger";
-const AsyncFn = (async () => null).constructor;
+import { makeAsyncHandler } from "../utils/asyncHander";
 
 type IHttpMethod = "post" | "get" | "all" | "put" | "delete";
 export type IHttpConfig = {
@@ -35,8 +35,6 @@ function IHttpBasic(
   if (config == undefined) config = { method: "all" };
   if (method != undefined) config.method = method;
   function iHttpHandler(stat: RouteStat): IHttpRouteHandler {
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} async handler function is required.`;
     return [
       config!,
       (req: HttpRequest, res: HttpResponse) => {
@@ -59,7 +57,7 @@ function IHttpBasic(
         }
         getContext().state.count++;
         logger.byType("debug", "start processing ", req.path);
-        handler(req, res, CreateAppState())
+       makeAsyncHandler(handler)(req, res, CreateAppState()) 
           .then((_r) => (_r ? _r : EmptyResponse()))
           .catch((_r: any) => (_r.responder ? _r : UnhandledReponse(_r)))
           .then((_r) => {

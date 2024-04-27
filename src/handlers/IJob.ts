@@ -2,8 +2,8 @@ import CreateAppState, { AppState } from "../lib/AppState";
 import { getContext } from "../lib/context";
 import events from "../lib/events";
 import logger from "../lib/logger";
+import { makeAsyncHandler } from "../utils/asyncHander";
 import { RouteStat } from "./BaseHander";
-const AsyncFn = (async () => null).constructor;
 type JobState = {
   expected: number;
   failed: number;
@@ -14,13 +14,12 @@ type IJobConfig = {
   instant?: boolean;
 };
 export default function IJob(
-  handler: IJobHandler,
+  async_handler: IJobHandler,
   opts: IJobConfig,
   args?: Object,
 ) {
+  const handler = makeAsyncHandler(async_handler);
   function IJobHandler(stat: RouteStat, name: string) {
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} IJob async handler function is required.`;
     const jobstate: JobState = {
       expected: 15,
       failed: 0,
