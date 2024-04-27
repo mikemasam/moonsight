@@ -173,6 +173,9 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
     } else if (route?.__ihandler == "isub") {
       found.isub++;
       await addISubRoute(stat, route);
+    }else{
+      logger.byType("debug", "expect component: ", route?.__ihandler, " -> ", stat.fullPath)
+      logger.byType("internal", "expect component:", stat, route?.__ihandler, found)
     }
   }
   for (let i = 0; i < routes.length; i++) {
@@ -188,6 +191,8 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
       await addICoreRoute(stat, route);
     } else {
       found.icom++;
+      logger.byType("debug", "expect component: ", route?.__ihandler, " -> ", stat.fullPath)
+      logger.byType("internal", "expect component:", stat, route?.__ihandler, found)
     }
   }
   return found;
