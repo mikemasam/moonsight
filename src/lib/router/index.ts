@@ -62,6 +62,7 @@ const loadRoutes = async (
   const routes = fs.readdirSync($stat.fullPath).map((file) => {
     const fullPath = path.join($stat.fullPath, file);
     const stat = fs.statSync(fullPath);
+    logger.byType("internal", "reading directory", fullPath, ", output: ", stat)
     const routeStat: RouteStat = {
       pos: $stat.pos + 1,
       fullPath: fullPath,
@@ -199,7 +200,9 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
 };
 
 const loadRouteModule = async (stat: RouteStat): Promise<IHandler<any>[]> => {
-  const module = await import(stat.fullPath);
-  const routes = Object.keys(module).filter((n) => n != "default");
-  return routes.map((r) => module[r]);
+  const _module = await import(stat.fullPath);
+  const keys: string[] = [];
+  for (var k in _module) keys.push(k) 
+  const routes = keys.filter((n) => n != "default");
+  return routes.map((r) => _module[r]);
 };
