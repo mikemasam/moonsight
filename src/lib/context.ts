@@ -33,13 +33,11 @@ export default async function createContext(
   opts.version = await app$version(opts);
   if (opts.coreHost && opts.mountCore?.mount)
     throw "[KernelJs] ~ Kernel failed to start, [coreMount and coreHost] only one is required.";
-  if (!opts.channelName)
-    throw "[KernelJs] ~ Kernel failed to start, channelName is required.";
+  if (!opts.channelName && (opts.coreHost || opts.mountCore?.mount))
+    throw "[KernelJs] ~ Kernel failed to start, channelName is required when connecting to coreHost or mountCore.";
   if (!opts.port)
     throw "[KernelJs] ~ Kernel failed to start, port is required.";
   if (!opts.settings) opts.settings = {};
-  if (!opts.nodeIdentity || opts.nodeIdentity.length != 3)
-    throw "[KernelJs] ~ Kernel failed to start, nodeIdentity is required [0-9]{3}.";
   if (!opts.host) opts.host = "localhost";
   opts.host = `${opts.host}:${opts.port}`;
   let mountCore: AppContextOptsMountCore | undefined = undefined;
