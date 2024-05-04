@@ -75,10 +75,17 @@ const runJob = async (
   args: Object,
   jobstate: JobState,
 ) => {
+  /*
   if (getContext().state.corenetReady === false) {
     logger.job("corenet not ready");
     return parseResponse(IJob.BUSY, 0, jobstate);
   }
+  */
+  if(!getContext().queue.initialized) {
+    logger.job("JOB ERRORED :", jobstate.name, ", Redis required for queue, lock and jobs ");
+    return parseResponse(IJob.FAILED, 0, jobstate);
+  }
+
   const lock = await getContext().queue.aquire(jobstate.name, { wait: false });
   if (!lock) return parseResponse(IJob.BUSY, 0, jobstate);
   getContext().state.count++;

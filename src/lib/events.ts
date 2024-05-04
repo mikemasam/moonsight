@@ -1,6 +1,7 @@
 import EventEmitter from "events";
 import logger from "./logger";
 import { getContext } from "./context";
+import { getRedisClient } from "./redis";
 
 const events = new EventEmitter();
 export default events;
@@ -16,7 +17,10 @@ export async function SystemEvents() {
     //else isAliveCheck();
   });
   const testReady = () => {
-    if (!getContext().state.redisReady) return;
+    if (!getContext().state.redisReady && getContext().net.RedisClient) {
+      console.log("Redis not ready")
+      return;
+    }
     if (!getContext().state.httpReady) return;
     if (getContext().ready === undefined)
       getContext().events.emit("kernel.ready", "form test");

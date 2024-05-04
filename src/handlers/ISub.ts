@@ -2,6 +2,7 @@ import logger from "../lib/logger";
 import { getContext } from "../lib/context";
 import CreateAppState, { AppState } from "../lib/AppState";
 import { IHandler, RouteStat } from "./BaseHander";
+import { getRedisClientSubscriber } from "../lib/redis";
 
 export type ISubHandler = (state: AppState, channel: string, a: Object) => void;
 //export type ISubHandlerRoute = {
@@ -9,7 +10,7 @@ export type ISubHandler = (state: AppState, channel: string, a: Object) => void;
 //  __ihandler: string;
 //};
 async function listen(channels: string[], handler: ISubHandler) {
-  await getContext().net.RedisClientSubscriber.subscribe(
+  await getRedisClientSubscriber().subscribe(
     channels,
     (message: string, channel: string) => {
       logger.byType("sub", `new message`, message);

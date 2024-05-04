@@ -45,7 +45,7 @@ export interface KernelArgs {
   version: string;
   channelName: string;
   nodeIdentity: string;
-  redis: {
+  redis?: {
     url: string;
   };
   apiMiddlewares: string | null;

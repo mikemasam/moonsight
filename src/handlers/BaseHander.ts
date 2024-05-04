@@ -192,4 +192,5 @@ export interface AppResponsePayload {
 
 export type QueueOptions = {
   wait: boolean;
+  soft?: boolean
 };

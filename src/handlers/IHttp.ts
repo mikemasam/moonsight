@@ -45,7 +45,7 @@ function IHttpBasic(
           startTime,
         };
         if (!getContext().ready)
-          return FailedResponse().json(log, req, res).http();
+          return FailedResponse({ message: "App booting" }).json(log, req, res).http();
         if (config?.minVersion) {
           if (!UID.latestVersion(req.query?.["v"], config.minVersion || false))
             return FailedResponse({

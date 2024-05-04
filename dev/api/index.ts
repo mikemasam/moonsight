@@ -9,9 +9,14 @@ import {
 } from "../../src/";
 
 export const ihttp = IHttp(async (req: HttpRequest, res, AppState) => {
+  //console.log("req1");
+  /*
   const lock = await AppState.queue("test");
+  console.log("req2");
   if (lock) setTimeout(() => lock.clear(), 5 * 1000);
-  return Response({ lock, name: "this is a name" });
+  */
+  //console.log("req3");
+  return Response({ lock: 1, name: "this is a name" });
 }, []);
 
 //user, business, device
@@ -29,7 +34,12 @@ export const isocketmount = ISocketMount(async ({ socket, ...req }) => {
 });
 
 export const imount = IMount(async (AppState) => {
-  //console.log(AppState);
+  /*
+  const lock = await AppState.queue("test");
+  console.log("req2")
+  if (lock) setTimeout(() => lock.clear(), 5 * 1000);
+  */
+
   const res = UUID.basic(1);
   AppState.queuePub("kernel:changed2", {
     test: 1,

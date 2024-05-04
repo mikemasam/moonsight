@@ -9,8 +9,6 @@ type IMountHandler = (state: AppState, args: IMountArgs) => Promise<any>;
 export default function IMount(async_handler: IMountHandler, opts?: string[]) {
   const handler = makeAsyncHandler(async_handler);
   function IMountHandler(stat: RouteStat) {
-    if (handler instanceof AsyncFn !== true)
-      throw `[KernelJs] ~ ${stat.fullPath} IMount async handler function is required.`;
     if (opts?.length && opts.indexOf("kernel.boot") > -1) {
       handler(CreateAppState(), {
         path: stat.path,
@@ -24,7 +22,7 @@ export default function IMount(async_handler: IMountHandler, opts?: string[]) {
         });
       });
     } else {
-      getContext().events.once("kernel.corenet.ready", () => {
+      getContext().events.once("kernel.ready", () => {
         handler(CreateAppState(), {
           path: stat.path,
           router: stat.router,

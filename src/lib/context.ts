@@ -35,8 +35,6 @@ export default async function createContext(
     throw "[KernelJs] ~ Kernel failed to start, [coreMount and coreHost] only one is required.";
   if (!opts.channelName)
     throw "[KernelJs] ~ Kernel failed to start, channelName is required.";
-  if (!opts.redis)
-    throw "[KernelJs] ~ Kernel failed to start, redis config is required.";
   if (!opts.port)
     throw "[KernelJs] ~ Kernel failed to start, port is required.";
   if (!opts.settings) opts.settings = {};
@@ -67,7 +65,7 @@ export default async function createContext(
     apiMount: opts.apiMount,
     nodeIdentity: opts.nodeIdentity,
     apiMiddlewares: opts.apiMiddlewares,
-    redis: { url: opts.redis.url },
+    redis: opts.redis,
     port: opts.port,
     shutdownTimeout: opts.shutdownTimeout || 30,
     mountCore,
@@ -92,7 +90,7 @@ export default async function createContext(
       httpApp: httpApp,
       httpServer: httpServer,
       middlewares: [],
-      RedisClient: createClient({ url: opts.redis.url }),
+      RedisClient: opts.redis ? createClient({ url: opts.redis.url }) : null,
       socketIO: socketIO,
       coreServer: coreServer,
       coreIO: coreIO,
@@ -149,7 +147,7 @@ export interface AppContextOpts {
   nodeIdentity: string;
   maxListeners: number | 20;
   host: string;
-  redis: { url: string };
+  redis?: { url: string };
   apiBasePath: string;
   apiPath: string;
   apiMount: string;
@@ -167,10 +165,10 @@ export interface AppContextNet {
   httpApp: Express;
   httpServer: http.Server;
   coreServer: http.Server;
-  RedisClient: RedisClientType;
+  RedisClient: RedisClientType | null;
   socketIO: Namespace;
   coreIO: Namespace | null;
-  RedisClientSubscriber?: any;
+  RedisClientSubscriber?: RedisClientType | null;
   coreNet?: CoreNetSelector;
   //bootRedis: () => Promise<void>;
   startup: () => void;

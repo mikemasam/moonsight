@@ -1,6 +1,7 @@
 import { QueueOptions } from "../handlers/BaseHander";
 import { AppContext, getContext } from "./context";
 import logger from "./logger";
+import { getRedisClient, getRedisClientSubscriber } from "./redis";
 
 const QUEUE_TIMEOUT = 10;
 
@@ -11,12 +12,15 @@ type IQueueLock = {
   keepAlive: () => Promise<void>;
 };
 export default class AppQueue {
+  initialized =  false;
   initQueue() {
     getContext().events.on("kernel.ready", () => this.attachEvents());
   }
   async attachEvents() {
     logger.byType("queue", `Queue started`);
-    await getContext().net.RedisClientSubscriber.subscribe(
+    if(!getContext().net.RedisClientSubscriber) return;
+    this.initialized = true;
+    await getRedisClientSubscriber().subscribe(
       "deba.core.kernel.exlusive.queue",
       (message: string) => {
         logger.byType("queue", `new message`, message);
@@ -73,9 +77,8 @@ export default class AppQueue {
     }
   }
   async keepAlive(name: string) {
-    const qex = await getContext()
-      .net.RedisClient.expire(name, QUEUE_TIMEOUT)
-      .catch((err) => false);
+    const qex = await getRedisClient().expire(name, QUEUE_TIMEOUT)
+      .catch((_) => false);
     console.assert(
       qex,
       "[KernelJs] ~ queue failed to set expire, set to expire",
@@ -86,24 +89,21 @@ export default class AppQueue {
       logger.byType("queue", `App not ready`);
       return false;
     }
-    const result = await getContext()
-      .net.RedisClient.setNX(name, lockId)
+    const result = await getRedisClient().setNX(name, lockId)
       .catch((err) => {
         logger.byType("queue", `an error occured`, err);
         return false;
       });
     logger.byType("queue", `aquiring lock ${name} => `, result, lockId);
     if (result) {
-      const qex = await getContext()
-        .net.RedisClient.expire(name, QUEUE_TIMEOUT)
+      const qex = await getRedisClient().expire(name, QUEUE_TIMEOUT)
         .catch((err) => false);
       console.assert(qex, "[KernelJs] ~ queue failed to set expire");
       logger.byType("queue", `lock aquired`, name, lockId);
       getContext().state.count++;
       return true;
     }
-    const ttl: number = await getContext()
-      .net.RedisClient.ttl(name)
+    const ttl: number = await getRedisClient().ttl(name)
       .catch((err) => -1);
     if (!ttl || ttl < 0) {
       await this.keepAlive(name);
@@ -114,21 +114,19 @@ export default class AppQueue {
     getContext().state.count--;
     if (!Array.isArray(getContext().opts.settings["kernel.exlusive.queue"]))
       getContext().opts.settings["kernel.exlusive.queue"] = [];
-    const result = await getContext()
-      .net.RedisClient.get(name)
+    const result = await getRedisClient().get(name)
       .catch((err) => false);
     const endTime = Date.now();
     if (result == null || result === false) return endTime - startTime;
     if (result != lockId) {
       logger.byType("queue", `queue lost lock`);
     } else {
-      const qdl = await getContext()
-        .net.RedisClient.del(name)
+      const qdl = await getRedisClient().del(name)
         .catch((err) => false);
       console.assert(qdl, "[KernelJs] ~ queue failed to release lock");
     }
     logger.byType("queue", `queue released`, name, lockId);
-    await getContext().net.RedisClient.publish(
+    await getRedisClient().publish(
       "deba.core.kernel.exlusive.queue",
       JSON.stringify({ lockId, name }),
     );

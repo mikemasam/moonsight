@@ -41,9 +41,9 @@ const logger: Logger = {
     valid = valid || opts[logType];
     if (!valid) return false;
     if (opts.format == "simple") {
-      console.log(`${limitString(logType, 7)}>`, ...args);
+      console.log(`${limitString(logType, 10)}>`, ...args);
     } else {
-      const format = `#[${date}][KernelJs:${limitString(logType, 7)}]`;
+      const format = `#[${date}][KernelJs:${limitString(logType, 10)}]`;
       console.log(format, ...args);
     }
     return true;

@@ -12,6 +12,7 @@ Kernel({
   channelName: "test",
   nodeIdentity: "111",
   //coreHost: "localhost:5000",
+  /*
   mountCore: {
     allowedIPs: "127.0.0.1, 0.0.0.0, 172.27.208.1",
     port: 5551,
@@ -20,14 +21,18 @@ Kernel({
   redis: {
     url: "redis://localhost:6379",
   },
+  */
   settings: {
     test: "testing",
   },
   logging: {
-  //  pub: true,
+    //pub: true,
     //sub: true,
     //all: true,
+    http: true,
     kernel: true,
+    exception: true,
+    error: true,
     job: true,
     app: {
       user: true 
