@@ -43,8 +43,8 @@ export interface KernelArgs {
   apiMount: string;
   coreHost?: string;
   version: string;
-  channelName?: string | null;
-  nodeIdentity?: string | null;
+  channelName?: string;
+  nodeIdentity?: string;
   redis?: {
     url: string;
   };
