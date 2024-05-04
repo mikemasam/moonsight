@@ -43,17 +43,17 @@ export interface KernelArgs {
   apiMount: string;
   coreHost?: string;
   version: string;
-  channelName: string;
-  nodeIdentity: string;
+  channelName?: string | null;
+  nodeIdentity?: string | null;
   redis?: {
     url: string;
   };
-  apiMiddlewares: string | null;
+  apiMiddlewares?: string | null;
   port: number;
   shutdownTimeout?: number;
   mountCore?: AppContextOptsMountCore;
-  settings: AppContextOptsSettings;
-  logging: AppContextOptsLogging;
+  settings?: AppContextOptsSettings;
+  logging?: AppContextOptsLogging;
 }
 
 export default async function create$kernel(

@@ -55,7 +55,7 @@ export default async function createContext(
 
   const envLoggingOpts = parseEnvLoggingOpts();
   const appOpts: AppContextOpts = {
-    channelName: opts.channelName,
+    channelName: opts.channelName ?? "master",
     version: opts.version,
     maxListeners: 20,
     host: opts.host,
@@ -144,14 +144,14 @@ export interface AppContextOptsMountCore {
 export interface AppContextOpts {
   channelName: string;
   version: string;
-  nodeIdentity: string;
+  nodeIdentity?: string;
   maxListeners: number | 20;
   host: string;
   redis?: { url: string };
   apiBasePath: string;
   apiPath: string;
   apiMount: string;
-  apiMiddlewares: string | null;
+  apiMiddlewares?: string | null;
   port: number;
   shutdownTimeout: number;
   coreHost?: string;
