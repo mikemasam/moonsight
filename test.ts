@@ -1,4 +1,4 @@
-import Kernel from "./src/index";
+import Kernel  from "./src/index";
 import path from "path";
 Kernel({
   host: "localhost",

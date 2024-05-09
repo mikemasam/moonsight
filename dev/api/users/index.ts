@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { AppLogger, AppState, ICore, IJob, ISocket, Response } from "../../../src";
 
 export const isocket = ISocket(
@@ -32,4 +33,4 @@ const job = async (
   AppLogger.log("user", "users index job")
   return [IJob.OK, "Just like that"];
 };
-export const ijob = IJob(job, { seconds: 3, instant: true }, { hi: 0 });
+export const ijob = IJob(job, { seconds: 20, instant: true }, { hi: 0 });

@@ -12,21 +12,30 @@ type IQueueLock = {
   keepAlive: () => Promise<void>;
 };
 export default class AppQueue {
-  initialized =  false;
+  initialized = false;
+  isLocal = false;
+  local: {
+    startTime: number;
+    name: string;
+    lockId: string;
+    timeout: number;
+  }[] = [];
   initQueue() {
     getContext().events.on("kernel.ready", () => this.attachEvents());
   }
   async attachEvents() {
     logger.byType("queue", `Queue started`);
-    if(!getContext().net.RedisClientSubscriber) return;
+    this.isLocal = !getContext().net.RedisClientSubscriber;
     this.initialized = true;
-    await getRedisClientSubscriber().subscribe(
-      "deba.core.kernel.exlusive.queue",
-      (message: string) => {
-        logger.byType("queue", `new message`, message);
-        this._queueLockReleased();
-      },
-    );
+    if (!this.isLocal) {
+      await getRedisClientSubscriber().subscribe(
+        "deba.core.kernel.exlusive.queue",
+        (message: string) => {
+          logger.byType("queue", `new message`, message);
+          this._queueLockReleased();
+        },
+      );
+    }
   }
   async aquire(
     name: string,
@@ -77,33 +86,54 @@ export default class AppQueue {
     }
   }
   async keepAlive(name: string) {
-    const qex = await getRedisClient().expire(name, QUEUE_TIMEOUT)
+    if(!this.initialized) return;
+    if (!this.isLocal) {
+      const pos = this.local.findIndex((r) => r.name == name);
+      this.local[pos].timeout = QUEUE_TIMEOUT;
+      return;
+    }
+    const qex = await getRedisClient()
+      .expire(name, QUEUE_TIMEOUT)
       .catch((_) => false);
     console.assert(
       qex,
       "[KernelJs] ~ queue failed to set expire, set to expire",
     );
+    return;
   }
   async _queueAquireLock(name: string, lockId: string) {
-    if (!getContext().ready) {
+    if(!this.initialized) {
       logger.byType("queue", `App not ready`);
       return false;
     }
-    const result = await getRedisClient().setNX(name, lockId)
+
+    if (this.isLocal) {
+      this.local.push({
+        startTime: Date.now(),
+        name,
+        lockId,
+        timeout: QUEUE_TIMEOUT,
+      });
+      return true;
+    }
+    const result = await getRedisClient()
+      .setNX(name, lockId)
       .catch((err) => {
         logger.byType("queue", `an error occured`, err);
         return false;
       });
     logger.byType("queue", `aquiring lock ${name} => `, result, lockId);
     if (result) {
-      const qex = await getRedisClient().expire(name, QUEUE_TIMEOUT)
+      const qex = await getRedisClient()
+        .expire(name, QUEUE_TIMEOUT)
         .catch((err) => false);
       console.assert(qex, "[KernelJs] ~ queue failed to set expire");
       logger.byType("queue", `lock aquired`, name, lockId);
       getContext().state.count++;
       return true;
     }
-    const ttl: number = await getRedisClient().ttl(name)
+    const ttl: number = await getRedisClient()
+      .ttl(name)
       .catch((err) => -1);
     if (!ttl || ttl < 0) {
       await this.keepAlive(name);
@@ -111,17 +141,31 @@ export default class AppQueue {
     }
   }
   async _queueReleaseLock(name: string, lockId: string, startTime: number) {
+    if(!this.initialized) {
+      return 0;
+    }
     getContext().state.count--;
+
+    const endTime = Date.now();
+    if (this.isLocal) {
+      const pos = this.local.findIndex((r) => r.name == name);
+      const startTime = this.local[pos].startTime;
+      this.local.splice(pos, 1);
+      logger.byType("queue", `queue released`, name, lockId);
+      return endTime - startTime;
+    }
+
     if (!Array.isArray(getContext().opts.settings["kernel.exlusive.queue"]))
       getContext().opts.settings["kernel.exlusive.queue"] = [];
-    const result = await getRedisClient().get(name)
+    const result = await getRedisClient()
+      .get(name)
       .catch((err) => false);
-    const endTime = Date.now();
     if (result == null || result === false) return endTime - startTime;
     if (result != lockId) {
       logger.byType("queue", `queue lost lock`);
     } else {
-      const qdl = await getRedisClient().del(name)
+      const qdl = await getRedisClient()
+        .del(name)
         .catch((err) => false);
       console.assert(qdl, "[KernelJs] ~ queue failed to release lock");
     }

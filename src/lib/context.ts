@@ -82,6 +82,7 @@ export default async function createContext(
     autoBoot: opts.autoBoot,
     mocking: opts.mocking,
     events: events,
+    hasRelation: (opts.coreHost || opts.mountCore?.mount) ? true : false,
     queue: new AppQueue(),
     opts: appOpts,
     net: {
@@ -183,6 +184,7 @@ export interface AppContextState {
 
 export interface AppContext {
   autoBoot: boolean;
+  hasRelation: boolean;
   mocking: boolean | undefined;
   ready: boolean | undefined;
   opts: AppContextOpts;

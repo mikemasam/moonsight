@@ -21,7 +21,7 @@ export default function IJob(
   const handler = makeAsyncHandler(async_handler);
   function IJobHandler(stat: RouteStat, name: string) {
     const jobstate: JobState = {
-      expected: 15,
+      expected: opts.seconds || IJob.BACKOFF,
       failed: 0,
       name: name,
     };
@@ -41,7 +41,7 @@ export default function IJob(
       }
     };
 
-    events.once("kernel.corenet.ready", () => {
+    events.once("kernel.ready", () => {
       if (opts.instant) runJob(handler, args || {}, jobstate).then(onResult);
     });
     events.on("kernel.heartbeat", () => {
@@ -81,11 +81,6 @@ const runJob = async (
     return parseResponse(IJob.BUSY, 0, jobstate);
   }
   */
-  if(!getContext().queue.initialized) {
-    logger.job("JOB ERRORED :", jobstate.name, ", Redis required for queue, lock and jobs ");
-    return parseResponse(IJob.FAILED, 0, jobstate);
-  }
-
   const lock = await getContext().queue.aquire(jobstate.name, { wait: false });
   if (!lock) return parseResponse(IJob.BUSY, 0, jobstate);
   getContext().state.count++;
@@ -94,9 +89,9 @@ const runJob = async (
     CreateAppState(),
     args,
   ).catch((err) => {
-    logger.job("JOB ERRORED :", jobstate.name, err);
-    return [IJob._ERRORED, err];
-  });
+      logger.job("JOB ERRORED :", jobstate.name, err);
+      return [IJob._ERRORED, err];
+    });
   getContext().state.count--;
   const lockTime = await lock.clear();
   return parseResponse(res, lockTime, jobstate);
