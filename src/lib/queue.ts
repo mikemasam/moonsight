@@ -19,6 +19,7 @@ export default class AppQueue {
     name: string;
     lockId: string;
     timeout: number;
+    clear_timeout: number;
   }[] = [];
   initQueue() {
     getContext().events.on("kernel.ready", () => this.attachEvents());
@@ -86,10 +87,13 @@ export default class AppQueue {
     }
   }
   async keepAlive(name: string) {
-    if(!this.initialized) return;
+    if (!this.initialized) return;
     if (!this.isLocal) {
       const pos = this.local.findIndex((r) => r.name == name);
-      this.local[pos].timeout = Date.now() + (QUEUE_TIMEOUT * 1000);
+      if (pos > -1) {
+        this.local[pos].timeout = Date.now() + QUEUE_TIMEOUT * 1000;
+        this.local[pos].clear_timeout = Date.now() + QUEUE_TIMEOUT * 10 * 1000;
+      }
       return;
     }
     const qex = await getRedisClient()
@@ -101,25 +105,26 @@ export default class AppQueue {
     );
     return;
   }
-  clearExpiredLocal(){
+  clearExpiredLocal() {
     const currentTime = Date.now();
-    this.local = this.local.filter(l => l.timeout > currentTime);
+    this.local = this.local.filter((l) => l.clear_timeout > currentTime);
   }
   async _queueAquireLock(name: string, lockId: string) {
-    if(!this.initialized) {
+    if (!this.initialized) {
       logger.byType("queue", `App not ready`);
       return false;
     }
 
     if (this.isLocal) {
       this.clearExpiredLocal();
-      const found = this.local.find(n => n.name == name);
-      if(found) return false;
+      const found = this.local.find((n) => n.name == name);
+      if (found) return false;
       this.local.push({
         startTime: Date.now(),
         name,
         lockId,
-        timeout: QUEUE_TIMEOUT,
+        timeout: Date.now() + QUEUE_TIMEOUT * 1000,
+        clear_timeout: Date.now() + QUEUE_TIMEOUT * 10 * 1000,
       });
       return true;
     }
@@ -148,7 +153,7 @@ export default class AppQueue {
     }
   }
   async _queueReleaseLock(name: string, lockId: string, startTime: number) {
-    if(!this.initialized) {
+    if (!this.initialized) {
       return 0;
     }
     getContext().state.count--;
@@ -156,11 +161,15 @@ export default class AppQueue {
     const endTime = Date.now();
     if (this.isLocal) {
       const pos = this.local.findIndex((r) => r.name == name);
-      const startTime = this.local[pos].startTime;
-      this.local.splice(pos, 1);
+      let timelap = -1;
+      if(pos > -1){
+        const startTime = this.local[pos].startTime;
+        this.local.splice(pos, 1);
+        timelap = endTime - startTime;
+      }
       this.clearExpiredLocal();
       logger.byType("queue", `queue released`, name, lockId);
-      return endTime - startTime;
+      return timelap;
     }
 
     if (!Array.isArray(getContext().opts.settings["kernel.exlusive.queue"]))
