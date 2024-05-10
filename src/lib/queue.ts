@@ -89,7 +89,7 @@ export default class AppQueue {
     if(!this.initialized) return;
     if (!this.isLocal) {
       const pos = this.local.findIndex((r) => r.name == name);
-      this.local[pos].timeout = QUEUE_TIMEOUT;
+      this.local[pos].timeout = Date.now() + (QUEUE_TIMEOUT * 1000);
       return;
     }
     const qex = await getRedisClient()
@@ -101,6 +101,10 @@ export default class AppQueue {
     );
     return;
   }
+  clearExpiredLocal(){
+    const currentTime = Date.now();
+    this.local = this.local.filter(l => l.timeout > currentTime);
+  }
   async _queueAquireLock(name: string, lockId: string) {
     if(!this.initialized) {
       logger.byType("queue", `App not ready`);
@@ -108,6 +112,9 @@ export default class AppQueue {
     }
 
     if (this.isLocal) {
+      this.clearExpiredLocal();
+      const found = this.local.find(n => n.name == name);
+      if(found) return false;
       this.local.push({
         startTime: Date.now(),
         name,
@@ -151,6 +158,7 @@ export default class AppQueue {
       const pos = this.local.findIndex((r) => r.name == name);
       const startTime = this.local[pos].startTime;
       this.local.splice(pos, 1);
+      this.clearExpiredLocal();
       logger.byType("queue", `queue released`, name, lockId);
       return endTime - startTime;
     }
