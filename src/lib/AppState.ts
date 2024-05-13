@@ -1,3 +1,4 @@
+import { ArgvResult } from "debargs";
 import { QueueOptions } from "../handlers/BaseHander";
 import { getContext } from "../lib/context";
 
@@ -15,6 +16,9 @@ export class AppState {
   //dictionary
   get<T>(name: string): T | undefined | null {
     return getContext().opts.settings[name];
+  }
+  getArgv(): ArgvResult {
+    return getContext().appArgv;
   }
   put(name: string, data: any) {
     getContext().opts.settings[name] = data;

@@ -5,6 +5,7 @@ const job = async (
   appState: AppState,
   c: Object
 ) => {
+  console.log(appState.getArgv().argv.name);
   //appState.queue("api:users");
   //return IJob.BACKOFF;
   //console.log("Job called");
