@@ -12,6 +12,7 @@ import { Namespace } from "socket.io";
 import CoreNetSelector from "./corenet/net";
 import events from "./events";
 import logger from "./logger";
+import { ArgvResult, parseArgs } from "debargs";
 
 export const getContext = (): AppContext => {
   return global.deba_kernel_ctx;
@@ -26,10 +27,13 @@ function parseEnvLoggingOpts() {
   for (let part of parts) logOpts[part] = true;
   return logOpts;
 }
+
 export default async function createContext(
   opts: KernelArgs,
 ): Promise<AppContext> {
-  if(typeof opts != "object") throw new Error("invalid object type")
+  const appArgv = parseArgs(process.argv);
+  opts.appRuntimeType = appArgv.$primary.includes("cli") ? "cli" : "node";
+  if (typeof opts != "object") throw new Error("invalid object type");
   opts.version = await app$version(opts);
   if (opts.coreHost && opts.mountCore?.mount)
     throw "[KernelJs] ~ Kernel failed to start, [coreMount and coreHost] only one is required.";
@@ -53,6 +57,7 @@ export default async function createContext(
 
   const envLoggingOpts = parseEnvLoggingOpts();
   const appOpts: AppContextOpts = {
+    appRuntimeType: opts.appRuntimeType!,
     channelName: opts.channelName ?? "master",
     version: opts.version,
     maxListeners: 20,
@@ -79,10 +84,12 @@ export default async function createContext(
   const socketIO = await createSocketIOServer(httpServer, appOpts, events);
   const coreIO = await createCoreIOServer(coreServer, appOpts, events);
   let context: AppContext = {
+    appArgv: appArgv,
+    appRuntimeType: opts.appRuntimeType!,
     autoBoot: opts.autoBoot,
     mocking: opts.mocking,
     events: events,
-    hasRelation: (opts.coreHost || opts.mountCore?.mount) ? true : false,
+    hasRelation: opts.coreHost || opts.mountCore?.mount ? true : false,
     queue: new AppQueue(),
     opts: appOpts,
     net: {
@@ -93,7 +100,7 @@ export default async function createContext(
       socketIO: socketIO,
       coreServer: coreServer,
       coreIO: coreIO,
-      startup: () => null,
+      httpStartup: () => null,
     },
     ready: undefined,
     state: {
@@ -104,9 +111,13 @@ export default async function createContext(
       corenetReady: false,
       redisReady: false,
       httpReady: false,
+      bootReady: false,
     },
     cleanup: AppCleanup(),
-    boot: async () => false,
+    boot: async () : Promise<boolean> => {
+      console.log("boot called")
+      return false;
+    },
   };
   return context;
 }
@@ -128,6 +139,7 @@ export type AppContextOptsLogging = {
   httpmount?: boolean;
   components?: boolean;
   internal?: boolean;
+  console?: boolean;
   app?: Record<string, boolean>;
   format?: "simple" | "full";
   //[key: string]: boolean | undefined;
@@ -155,7 +167,7 @@ export interface AppContextOpts {
   shutdownTimeout: number;
   coreHost?: string;
   mountCore?: AppContextOptsMountCore;
-
+  appRuntimeType: AppRuntimeType;
   settings: AppContextOptsSettings;
   logging: AppContextOptsLogging;
 }
@@ -170,7 +182,7 @@ export interface AppContextNet {
   RedisClientSubscriber?: RedisClientType | null;
   coreNet?: CoreNetSelector;
   //bootRedis: () => Promise<void>;
-  startup: () => void;
+  httpStartup: () => void;
 }
 export interface AppContextState {
   redisReady: boolean;
@@ -180,8 +192,10 @@ export interface AppContextState {
   shutdown: boolean;
   timeout: number;
   corenetReady: boolean;
+  bootReady: boolean;
 }
 
+export type AppRuntimeType = "node" | "cli";
 export interface AppContext {
   autoBoot: boolean;
   hasRelation: boolean;
@@ -193,6 +207,8 @@ export interface AppContext {
   queue: AppQueue;
   cleanup: AppCleanup;
   events: EventEmitter;
+  appRuntimeType: AppRuntimeType;
+  appArgv: ArgvResult;
   boot: () => Promise<boolean>;
 }
 

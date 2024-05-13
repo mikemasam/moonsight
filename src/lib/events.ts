@@ -11,19 +11,25 @@ export async function SystemEvents() {
     getContext().events.emit("kernel.internal.heartbeat", {});
     if (getContext().ready) getContext().events.emit("kernel.heartbeat", {});
   }, 1000);
-  getContext().events.on("kernel.ready", (fromW) => {
+  getContext().events.on("kernel.ready", () => {
+    logger.byType("debug", "kernel.ready fired");
     getContext().state.timeout = getContext().opts.shutdownTimeout;
     if (getContext().ready === undefined) getContext().ready = true;
     //else isAliveCheck();
   });
   const testReady = () => {
     if (!getContext().state.redisReady && getContext().net.RedisClient) {
-      console.log("Redis not ready")
       return;
     }
-    if (!getContext().state.httpReady) return;
-    if (getContext().ready === undefined)
+    if (!getContext().state.httpReady) {
+      logger.byType("debug", "http not ready");
+      return;
+    }
+    if (getContext().ready === undefined) {
       getContext().events.emit("kernel.ready", "form test");
+    } else {
+      logger.byType("debug", "something not ready");
+    }
   };
   getContext().events.on("kernel.internal.redis.ready", () => {
     getContext().state.redisReady = true;
@@ -38,6 +44,11 @@ export async function SystemEvents() {
   getContext().events.on("kernel.internal.corenet.ready", () => {
     getContext().state.corenetReady = true;
     getContext().events.emit("kernel.corenet.ready");
+  });
+  getContext().events.on("kernel.internal.boot.ready", () => {
+    getContext().state.bootReady = true;
+    getContext().events.emit("kernel.boot.ready");
+    testReady();
   });
   //TODO: enable state count
   const isAliveCheck = () => {

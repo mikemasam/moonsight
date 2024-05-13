@@ -10,6 +10,7 @@ import { addISubRoute } from "./sub-handler";
 import loadMiddlewares from "./middlewares";
 import { AppContext, AppContextOpts } from "../context";
 import { IHandler, RouteStat } from "../../handlers/BaseHander";
+import { addIConsoleRoute } from "./console-handlers";
 
 export default async function HttpRouter() {
   const ctx = global.deba_kernel_ctx;
@@ -20,7 +21,7 @@ export default async function HttpRouter() {
       throw `[KernelJs] ~ Invalid Route path [api] = ${opts.apiPath}.`;
     const root = Router({ mergeParams: true });
     logger.kernel("...............");
-    if (opts.apiMiddlewares != null)
+    if (opts.apiMiddlewares != null && ctx.appRuntimeType == "node")
       ctx.net.middlewares = await loadMiddlewares(opts.apiMiddlewares);
     else ctx.net.middlewares = [];
     const stat = await mountPath(opts, root, ctx.opts.apiBasePath);
@@ -62,7 +63,13 @@ const loadRoutes = async (
   const routes = fs.readdirSync($stat.fullPath).map((file) => {
     const fullPath = path.join($stat.fullPath, file);
     const stat = fs.statSync(fullPath);
-    logger.byType("internal", "reading directory", fullPath, ", output: ", stat)
+    logger.byType(
+      "internal",
+      "reading directory",
+      fullPath,
+      ", output: ",
+      stat,
+    );
     const routeStat: RouteStat = {
       pos: $stat.pos + 1,
       fullPath: fullPath,
@@ -111,12 +118,12 @@ const loadRoutes = async (
   let mounted_routes = [...r1, ...r2, ...r3, ...r4];
   const acc = counter();
   const keys = Object.keys(acc);
-  for (let o = 0; o < mounted_routes.length; o++){
+  for (let o = 0; o < mounted_routes.length; o++) {
     for (let i = 0; i < keys.length; i++) {
       acc[keys[i]] += mounted_routes[o][keys[i]];
     }
   }
-  logger.byType("internal",  acc)
+  logger.byType("internal", acc);
   return acc;
 };
 
@@ -124,7 +131,7 @@ const addRouter = async (ctx: AppContext, stat: RouteStat) => {
   const root = Router({ mergeParams: true });
   const total = await loadRoutes(ctx, root, stat);
   if (total.ihttp < 1) {
-    logger.byType("internal",  stat, total)
+    logger.byType("internal", stat, total);
     logger.byTypes(["components", "debug"], `Components: ${stat.location}`);
     return total;
   }
@@ -144,6 +151,7 @@ const counter = (): { [key: string]: number } => {
     icom: 0,
     isub: 0,
     ijob: 0,
+    iconsole: 0,
     imount: 0,
     isocketmount: 0,
     ihttp: 0,
@@ -161,6 +169,13 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
   const routes = await loadRouteModule(stat);
   for (let i = 0; i < routes.length; i++) {
     const route = routes[i];
+    if (ctx.appRuntimeType == "cli") {
+      if (route?.__ihandler == "iconsole") {
+        found.iconsole++;
+        await addIConsoleRoute(stat, route);
+      }
+      continue;
+    }
     if (route?.__ihandler == "imount") {
       found.imount++;
       logger.byTypes(["mount", "debug"], `IMount: ${stat.location}`);
@@ -174,13 +189,28 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
     } else if (route?.__ihandler == "isub") {
       found.isub++;
       await addISubRoute(stat, route);
-    }else{
-      logger.byType("debug", "expect component: ", route?.__ihandler, " -> ", stat.fullPath)
-      logger.byType("internal", "expect component:", stat, route?.__ihandler, found)
+    } else {
+      logger.byType(
+        "debug",
+        "expect component: ",
+        route?.__ihandler,
+        " -> ",
+        stat.fullPath,
+      );
+      logger.byType(
+        "internal",
+        "expect component:",
+        stat,
+        route?.__ihandler,
+        found,
+      );
     }
   }
   for (let i = 0; i < routes.length; i++) {
     const route = routes[i];
+    if (ctx.appRuntimeType == "cli") {
+      continue;
+    }
     if (route?.__ihandler == "ihttp") {
       found.ihttp++;
       await addIHttpRoute(stat.router, stat, route);
@@ -192,8 +222,20 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
       await addICoreRoute(stat, route);
     } else {
       found.icom++;
-      logger.byType("debug", "expect component: ", route?.__ihandler, " -> ", stat.fullPath)
-      logger.byType("internal", "expect component:", stat, route?.__ihandler, found)
+      logger.byType(
+        "debug",
+        "expect component: ",
+        route?.__ihandler,
+        " -> ",
+        stat.fullPath,
+      );
+      logger.byType(
+        "internal",
+        "expect component:",
+        stat,
+        route?.__ihandler,
+        found,
+      );
     }
   }
   return found;
@@ -202,7 +244,7 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
 const loadRouteModule = async (stat: RouteStat): Promise<IHandler<any>[]> => {
   const _module = await import(stat.fullPath);
   const keys: string[] = [];
-  for (var k in _module) keys.push(k) 
+  for (var k in _module) keys.push(k);
   const routes = keys.filter((n) => n != "default");
   return routes.map((r) => _module[r]);
 };

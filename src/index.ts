@@ -3,12 +3,13 @@ import Router from "./lib/router/index";
 import UID from "./lib/universal.identity";
 import TestRegex from "./lib/testregex";
 import CoreNetwork, { CoreNet } from "./lib/corenet/index";
-import { AppLogger } from "./lib/logger"
+import logger, { AppLogger } from "./lib/logger";
 import createContext, {
   AppContext,
   AppContextOptsLogging,
   AppContextOptsMountCore,
   AppContextOptsSettings,
+  AppRuntimeType,
 } from "./lib/context";
 import { bootHttpApp } from "./lib/http";
 import bootRedis from "./lib/boot.redis";
@@ -32,11 +33,13 @@ import IMount from "./handlers/IMount";
 import IBatchHttp from "./handlers/IBatchHttp";
 import ISub from "./handlers/ISub";
 import IJob from "./handlers/IJob";
+import IConsole from "./handlers/IConsole";
 import IHttpMiddleware from "./handlers/IHttpMiddleware";
 import z from "zod";
 
 export interface KernelArgs {
   host: string;
+  appRuntimeType?: AppRuntimeType;
   autoBoot: boolean;
   mocking?: boolean;
   apiPath: string;
@@ -79,12 +82,16 @@ export default async function create$kernel(
     );
   }
   global.deba_kernel_ctx.boot = async () => {
-    if (global.deba_kernel_ctx.state.up) return false;
+    if (global.deba_kernel_ctx.state.up) {
+      logger.kernel("already up");
+      return false;
+    }
     global.deba_kernel_ctx.state.up = true;
     return new Promise(async (reslv: (a: boolean) => void) => {
       global.deba_kernel_ctx.events.once("kernel.ready", () => reslv(true));
       await bootRedis();
-      global.deba_kernel_ctx.net.startup();
+      global.deba_kernel_ctx.net.httpStartup();
+      global.deba_kernel_ctx.events.emit("kernel.internal.boot.ready");
     });
   };
   if (global.deba_kernel_ctx.autoBoot) await global.deba_kernel_ctx.boot();
@@ -112,6 +119,7 @@ export {
   ISocketMount,
   ICore,
   IMount,
+  IConsole,
   IBatchHttp,
   ISub,
   IJob,
@@ -123,7 +131,7 @@ export {
   UUID,
   UID,
   z,
-  AppLogger
+  AppLogger,
 };
 
 export type * from "./handlers/BaseHander";

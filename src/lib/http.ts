@@ -27,11 +27,15 @@ export async function bootHttpApp() {
     ctx.net.coreServer?.close();
   });
 
-  ctx.net.startup = () => {
+  ctx.net.httpStartup = () => {
     if (ctx.net.coreServer && ctx.opts.mountCore?.mount) {
       ctx.net.coreServer.listen(ctx.opts.mountCore.port, "0.0.0.0", () => {
         logger.kernel(`CoreNet: host:${ctx.opts.mountCore?.port}`);
       });
+    }
+    if (ctx.appRuntimeType != "node") {
+      ctx.events.emit("kernel.internal.http.ready");
+      return;
     }
     if (ctx.net.httpServer) {
       ctx.net.httpServer.listen(ctx.opts.port, "0.0.0.0", () => {
