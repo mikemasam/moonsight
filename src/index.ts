@@ -1,4 +1,4 @@
-import { SystemEvents } from "./lib/events";
+import { SystemEvents, runBackgroundTasks } from "./lib/events";
 import Router from "./lib/router/index";
 import UID from "./lib/universal.identity";
 import TestRegex from "./lib/testregex";
@@ -10,6 +10,7 @@ import createContext, {
   AppContextOptsMountCore,
   AppContextOptsSettings,
   AppRuntimeType,
+  getContext,
 } from "./lib/context";
 import { bootHttpApp } from "./lib/http";
 import bootRedis from "./lib/boot.redis";
@@ -95,6 +96,7 @@ export default async function create$kernel(
     });
   };
   if (global.deba_kernel_ctx.autoBoot) await global.deba_kernel_ctx.boot();
+  await runBackgroundTasks();
   return global.deba_kernel_ctx;
 }
 

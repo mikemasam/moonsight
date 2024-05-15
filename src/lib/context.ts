@@ -32,7 +32,7 @@ export default async function createContext(
   opts: KernelArgs,
 ): Promise<AppContext> {
   const appArgv = parseArgs(process.argv);
-  opts.appRuntimeType = appArgv.$primary.includes("cli") ? "cli" : "node";
+  opts.appRuntimeType = appArgv.$primary.length > 2 ? "cli" : "node";
   if (typeof opts != "object") throw new Error("invalid object type");
   opts.version = await app$version(opts);
   if (opts.coreHost && opts.mountCore?.mount)
@@ -57,6 +57,7 @@ export default async function createContext(
 
   const envLoggingOpts = parseEnvLoggingOpts();
   const appOpts: AppContextOpts = {
+    hasRelation: opts.coreHost || opts.mountCore?.mount ? true : false,
     appRuntimeType: opts.appRuntimeType!,
     channelName: opts.channelName ?? "master",
     version: opts.version,
@@ -78,12 +79,13 @@ export default async function createContext(
       ...envLoggingOpts,
     },
   };
-  const httpApp = createHttpApp();
+  const httpApp = createHttpApp(appOpts);
   const coreServer = createCoreServer(appOpts);
-  const httpServer = createHttpServer(httpApp);
+  const httpServer = createHttpServer(httpApp, appOpts);
   const socketIO = await createSocketIOServer(httpServer, appOpts, events);
   const coreIO = await createCoreIOServer(coreServer, appOpts, events);
   let context: AppContext = {
+    tasks: [],
     appArgv: appArgv,
     appRuntimeType: opts.appRuntimeType!,
     autoBoot: opts.autoBoot,
@@ -153,6 +155,7 @@ export interface AppContextOptsMountCore {
   allowedIPs: string;
 }
 export interface AppContextOpts {
+  hasRelation: boolean;
   channelName: string;
   version: string;
   nodeIdentity?: string;
@@ -173,11 +176,11 @@ export interface AppContextOpts {
 }
 export interface AppContextNet {
   middlewares: IAnyMiddlewareRoute[];
-  httpApp: Express;
-  httpServer: http.Server;
-  coreServer: http.Server;
+  httpApp: Express | null;
+  httpServer: http.Server | null;
+  coreServer: http.Server | null;
   RedisClient: RedisClientType | null;
-  socketIO: Namespace;
+  socketIO: Namespace | null;
   coreIO: Namespace | null;
   RedisClientSubscriber?: RedisClientType | null;
   coreNet?: CoreNetSelector;
@@ -209,6 +212,7 @@ export interface AppContext {
   events: EventEmitter;
   appRuntimeType: AppRuntimeType;
   appArgv: ArgvResult;
+  tasks: { action: () => Promise<any>, name: string}[];
   boot: () => Promise<boolean>;
 }
 

@@ -29,8 +29,8 @@ Kernel({
     //pub: true,
     //sub: true,
     //all: true,
-    http: true,
-    kernel: true,
+    http: false,
+    kernel: false,
     exception: true,
     error: true,
     job: true,
@@ -42,3 +42,4 @@ Kernel({
 }).then((e) => {
   //console.log(e);
 });
+

@@ -95,6 +95,10 @@ export default class CoreNetQuery {
         return this.__handleFailed(null, event, body, resolve, 502);
       }
       const { coreIO } = getContext().net;
+      if(!coreIO){
+        logger.byType("corenet", "invalid state, coreIO not initialized");
+        return this.__handleFailed(null, event, body, resolve, 502);
+      }
       const sockets = await coreIO!.fetchSockets();
       //const data = { channel: this.channel, event, body };
       let consumer = sockets.find(

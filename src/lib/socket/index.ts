@@ -6,11 +6,11 @@ import { AppContextOpts } from "../context";
 import EventEmitter from "events";
 
 export async function createCoreIOServer(
-  coreServer: http.Server,
+  coreServer: http.Server | null,
   opts: AppContextOpts,
   events: EventEmitter
 ): Promise<Namespace | null> {
-  if (opts.mountCore?.mount) {
+  if (opts.mountCore?.mount && coreServer != null) {
     const coreIO: Server = new Server(coreServer, {
       cors: { origin: "*" },
       transports: ["websocket"],
@@ -22,10 +22,11 @@ export async function createCoreIOServer(
 }
 
 export async function createSocketIOServer(
-  httpServer: http.Server,
+  httpServer: http.Server | null,
   opts: AppContextOpts,
   events: EventEmitter
-): Promise<Namespace> {
+): Promise<Namespace | null> {
+  if(httpServer == null) return null;
   const io: Server = new Server(httpServer, {
     cors: { origin: "*" },
     transports: ["websocket"],

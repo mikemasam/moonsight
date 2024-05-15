@@ -14,49 +14,25 @@ export default function IConsole(
 ) {
   const handler = makeAsyncHandler(async_handler);
   function IConsoleHandler(stat: RouteStat, path: string) {
-    let shouldExec = false;
-    const $primary = getContext().appArgv.$primary;
-    if ($primary.indexOf(path) > -1) shouldExec = true;
-    if (!shouldExec) {
-      const splited = path.split(":").slice(1);
-      let start = $primary.indexOf(splited[0]);
-      if (start > -1) {
-        let elem = null;
-        while ((elem = splited.shift())) {
-          if ($primary[start] != elem) {
-            shouldExec = false;
-            break;
-          } else {
-            shouldExec = true;
-          }
-          start += 1;
-        }
-      }
-    }
-    logger.byType("console", stat, ", should execute: ", shouldExec, ", path: ", path);
-    if (opts.event_name == "kernel.boot.ready") { 
-      if(!shouldExec) return;
-      handler(CreateAppState(), {
-        path: stat.path,
-        router: stat.router,
-      });
-    } else if (opts.event_name == "kernel.ready") {
-      if(!shouldExec) return;
-      getContext().events.once("kernel.ready", () => {
+    const regex = new RegExp(`^\:?${path.replace(/\:/g, "\\:|\\.")}$`, "");
+    const $primary = getContext().appArgv.$primary.slice(2).join(".");
+    logger.byType(
+      "console",
+      stat,
+      ", should execute: ",
+      regex.test($primary),
+      ", path: ",
+      path,
+    );
+    if (!regex.test($primary)) return;
+    getContext().tasks.push({
+      name: path,
+      action: async () =>
         handler(CreateAppState(), {
           path: stat.path,
           router: stat.router,
-        });
-      });
-    } else {
-      if(!shouldExec) return;
-      getContext().events.once("kernel.ready", (...args) => {
-        handler(CreateAppState(), {
-          path: stat.path,
-          router: stat.router,
-        });
-      });
-    }
+        }),
+    });
   }
   IConsoleHandler.__ihandler = "iconsole";
   return IConsoleHandler;

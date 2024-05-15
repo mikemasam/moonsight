@@ -26,9 +26,11 @@ export default async function HttpRouter() {
     else ctx.net.middlewares = [];
     const stat = await mountPath(opts, root, ctx.opts.apiBasePath);
     const res = await addRouter(ctx, stat);
-    logger.byType("debug", `Loader: ${stat.location}`, ` ~`, res);
-    httpApp.use(root);
-    httpApp.use("*", notFoundRouter() as any);
+    if (httpApp != null) {
+      logger.byType("debug", `Loader: ${stat.location}`, ` ~`, res);
+      httpApp.use(root);
+      httpApp.use("*", notFoundRouter() as any);
+    }
   }
   return ctx;
 }

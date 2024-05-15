@@ -2,18 +2,21 @@ import http from "http";
 import express, { Express } from "express";
 import cors from "cors";
 import logger from "./logger";
-import { AppContextOpts } from "./context";
+import { AppContextOpts, getContext } from "./context";
 
-export function createHttpApp(): Express {
+export function createHttpApp(opts: AppContextOpts): Express | null {
+  if(opts.appRuntimeType != "node") return null;
   const app = express();
   app.use(express.json());
   app.use(cors());
   return app;
 }
-export function createHttpServer(httpApp: Express): http.Server {
+export function createHttpServer(httpApp: Express | null, opts: AppContextOpts): http.Server | null {
+  if(opts.appRuntimeType != "node" || httpApp == null) return null;
   return new http.Server(httpApp);
 }
-export function createCoreServer(opts: AppContextOpts): http.Server {
+export function createCoreServer(opts: AppContextOpts): http.Server | null {
+  if(!opts.hasRelation) return null;
   return http.createServer();
 }
 export async function bootHttpApp() {

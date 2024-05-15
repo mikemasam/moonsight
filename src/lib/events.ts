@@ -7,7 +7,7 @@ const events = new EventEmitter();
 export default events;
 export async function SystemEvents() {
   getContext().events.setMaxListeners(getContext().opts.maxListeners || 20);
-  const heartbeat = setInterval(() => {
+  const $heartbeat = setInterval(() => {
     getContext().events.emit("kernel.internal.heartbeat", {});
     if (getContext().ready) getContext().events.emit("kernel.heartbeat", {});
   }, 1000);
@@ -79,6 +79,22 @@ export async function SystemEvents() {
   getContext().cleanup.add("Events", () => {
     getContext().ready = false;
     getContext().state.shutdown = true;
-    clearInterval(heartbeat);
+    clearInterval($heartbeat);
   });
+}
+
+export async function runBackgroundTasks() {
+  const ctx = getContext();
+  if (!ctx.ready) return;
+  const total_tasks = ctx.tasks.length;
+  let task = ctx.tasks.pop();
+  while (task) {
+    logger.kernel("running task: ", task.name);
+    await task?.action();
+    task = ctx.tasks.pop();
+  }
+  logger.kernel("total tasks: ", total_tasks);
+  if (ctx.appRuntimeType == "cli") {
+    if (getContext().ready) getContext().cleanup.dispose();
+  }
 }

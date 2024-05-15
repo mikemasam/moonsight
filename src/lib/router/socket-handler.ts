@@ -88,7 +88,9 @@ const queueEndpoint = async (
   handler: ISocketRoute,
   middlewares: MiddlewareRouteStack[],
 ) => {
-  getContext().net.socketIO.on("connection", (_socket: Socket) => {
+  const socketIO = getContext().net.socketIO;
+  if(socketIO == null) return;
+  socketIO.on("connection", (_socket: Socket) => {
     const socket = moveSocketToRequestRaw(_socket);
     socket!.on(endpoint, (data, fn) => {
       const req: SocketRequest = makeSocketRequest(
@@ -112,35 +114,35 @@ export const addISocketMount = async (
   stat: RouteStat,
   isocketmount: IHandler<ISocketMountRoute>,
 ) => {
+  const socketIO = getContext().net.socketIO;
+  if (socketIO == null) return;
   const originalUrl = await cleanRoutePath(stat.location);
   const handler = isocketmount(stat);
   logger.byType("socketmount", `[KernelJs] ~ ISocketMount: ${stat.location}`);
-  getContext().net.socketIO.use(
-    (_socket: Socket, next: (err?: Error) => void) => {
-      const socket = moveSocketToRequestRaw(_socket);
-      const req: SocketRequest = makeSocketRequest(
-        socket,
-        originalUrl,
-        "isocketmount",
-        "isocketmount",
-        null,
-      );
-      const fn = (response: any) => {
-        if (parseInt(String(req.query?.explain)) === 0) {
-          //for buggy socket implemetation
-          const err = new Error(`${response.message} --x`);
-          next(err);
-        } else {
-          const err: any = new Error(response.message);
-          err.data = response.data;
-          //err.status = response.status;
-          next(err);
-        }
-      };
-      const res: SocketResponse = makeSocketResponse(fn);
-      handler(req, res, next);
-    },
-  );
+  socketIO.use((_socket: Socket, next: (err?: Error) => void) => {
+    const socket = moveSocketToRequestRaw(_socket);
+    const req: SocketRequest = makeSocketRequest(
+      socket,
+      originalUrl,
+      "isocketmount",
+      "isocketmount",
+      null,
+    );
+    const fn = (response: any) => {
+      if (parseInt(String(req.query?.explain)) === 0) {
+        //for buggy socket implemetation
+        const err = new Error(`${response.message} --x`);
+        next(err);
+      } else {
+        const err: any = new Error(response.message);
+        err.data = response.data;
+        //err.status = response.status;
+        next(err);
+      }
+    };
+    const res: SocketResponse = makeSocketResponse(fn);
+    handler(req, res, next);
+  });
 };
 //console.log(handler);
 
