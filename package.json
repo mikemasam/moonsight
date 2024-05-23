@@ -1,7 +1,7 @@
 {
-  "name": "deba-kerneljs",
-  "version": "0.1.169",
-  "description": "DEBA Kernel JS",
+  "name": "moonsight",
+  "version": "0.1.21",
+  "description": "Web application framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -15,11 +15,11 @@
     "tsconfig.json",
     "package.json"
   ],
-  "author": "Masam Technologies LTD",
-  "homepage": "https://github.com/masam-technologies/deba-kerneljs#readme",
+  "author": "",
+  "homepage": "https://github.com/mikemasam/moonsight#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/masam-technologies/deba-kerneljs.git"
+    "url": "https://github.com/mikemasam/moonsight.git"
   },
   "license": "GPL",
   "dependencies": {

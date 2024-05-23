@@ -1,4 +1,4 @@
-import { AppContext, AppContextOptsLogging } from "./context";
+import { AppContext } from "./context";
 
 export interface TAppLogger {
   log: (type: string, ...args: any[]) => void;
@@ -6,14 +6,15 @@ export interface TAppLogger {
 
 export const AppLogger: TAppLogger = {
   log: (type: string, ...args: any[]) => {
+    if (!logger.opts()?.["app"]) return;
     const appl: any = logger.opts()["app"];
-    if(appl[type]){
+    if (appl[type]) {
       logger.byType("app", `[${type}]`, ...args);
     }
   },
-}
+};
 export interface Logger {
-  opts: () => Record<string, boolean | string | Record<string, boolean>>,
+  opts: () => Record<string, boolean | string | Record<string, boolean>>;
   kernel: (...args: any[]) => void;
   job: (...args: any[]) => void;
   byType: (logType: string, ...args: any[]) => boolean;
@@ -25,7 +26,10 @@ export interface Logger {
 const logger: Logger = {
   opts: () => {
     const context = global.deba_kernel_ctx as AppContext;
-    return context.opts.logging as Record<string, boolean | string | Record<string, boolean>>;
+    return context.opts.logging as Record<
+      string,
+      boolean | string | Record<string, boolean>
+    >;
   },
   kernel: (...args) => {
     logger.byType("kernel", ...args);
@@ -36,7 +40,7 @@ const logger: Logger = {
   byType: (logType: string, ...args): boolean => {
     let date = new Date().toLocaleString();
     const opts = logger.opts();
-    let valid  = opts.all;
+    let valid = opts.all;
     valid = valid && opts[logType] !== false;
     valid = valid || opts[logType];
     if (!valid) return false;
@@ -62,5 +66,8 @@ const logger: Logger = {
   },
 };
 
-const limitString = (str: string, maxLength: number) => str.length <= maxLength ? str.padEnd(maxLength, '-') : str.substring(0, maxLength - 3) + '...';
+const limitString = (str: string, maxLength: number) =>
+  str.length <= maxLength
+    ? str.padEnd(maxLength, "-")
+    : str.substring(0, maxLength - 3) + "...";
 export default logger;
