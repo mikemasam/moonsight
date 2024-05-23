@@ -1,6 +1,6 @@
 {
   "name": "moonsight",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Web application framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "tsconfig.json",
     "package.json"
   ],
-  "author": "",
+  "author": "MikeMasam",
   "homepage": "https://github.com/mikemasam/moonsight#readme",
   "repository": {
     "type": "git",
