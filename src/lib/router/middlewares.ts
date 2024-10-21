@@ -8,7 +8,7 @@ import {
   MiddlewareStat,
   RouteStat,
 } from "../../handlers/BaseHander";
-import logger from "../logger";
+import logger, { AppLogger } from "../logger";
 
 const AsyncFn = (async () => null).constructor;
 export default async function loadMiddlewares(location: string) {
@@ -23,7 +23,7 @@ export default async function loadMiddlewares(location: string) {
 }
 
 const getMiddlewares = async (
-  directory: string
+  directory: string,
 ): Promise<IAnyMiddlewareRoute[]> => {
   const routes = fs.readdirSync(directory).map((file) => {
     const fullPath = path.join(directory, file);
@@ -44,7 +44,8 @@ const getMiddlewares = async (
       mids.push(...nested);
     } else if (stat.isFile) {
       const action = await loadMiddleware(stat.fullPath);
-      if (action?.__ihandler != "ihttp.middleware") continue;
+      if (!action) continue;
+      if (action.__ihandler != "ihttp.middleware") continue;
       const md: IAnyMiddlewareRoute = {
         name: cleanName(stat.file),
         action: action(stat as RouteStat),
@@ -56,10 +57,17 @@ const getMiddlewares = async (
 };
 
 const loadMiddleware = async (
-  location: string
-): Promise<IHandler<IHttpMiddlewareHandler | ISocketMiddlewareHandler>> => {
-  const module = await import(`${location}`);
-  return module.default;
+  location: string,
+): Promise<
+  IHandler<IHttpMiddlewareHandler | ISocketMiddlewareHandler> | undefined
+> => {
+  try {
+    const module = await import(`${location}`);
+    return module.default;
+  } catch (e) {
+    logger.byType("debug", `Middleware not loadable: ${location}`);
+    return undefined;
+  }
 };
 
 const cleanName = (file: string) => {

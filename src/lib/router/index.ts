@@ -243,10 +243,17 @@ const addRoute = async (ctx: AppContext, stat: RouteStat) => {
   return found;
 };
 
-const loadRouteModule = async (stat: RouteStat): Promise<IHandler<any>[]> => {
-  const _module = await import(stat.fullPath);
-  const keys: string[] = [];
-  for (var k in _module) keys.push(k);
-  const routes = keys.filter((n) => n != "default");
-  return routes.map((r) => _module[r]);
+const loadRouteModule = async (
+  stat: RouteStat,
+): Promise<IHandler<any>[]> => {
+  try {
+    const _module = await import(stat.fullPath);
+    const keys: string[] = [];
+    for (var k in _module) keys.push(k);
+    const routes = keys.filter((n) => n != "default");
+    return routes.map((r) => _module[r]);
+  } catch (e) {
+    logger.byType("debug", `Module not loadable: ${stat.fullPath}`);
+    return [];
+  }
 };
