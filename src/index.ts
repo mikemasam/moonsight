@@ -20,7 +20,7 @@ import NoResponse from "./responders/NoResponse";
 import EmptyResponse from "./responders/EmptyResponse";
 import FailedResponse from "./responders/FailedResponse";
 import CreateRequestState, { RequestState } from "./responders/Request";
-import BasicResponse from "./responders/Response";
+import OkResponse from "./responders/Response";
 import IHttp, {
   IHttpGet,
   IHttpPost,
@@ -37,6 +37,7 @@ import IJob from "./handlers/IJob";
 import IConsole from "./handlers/IConsole";
 import IHttpMiddleware from "./handlers/IHttpMiddleware";
 import z from "zod";
+import CreateAppState from "./lib/AppState";
 
 export interface KernelArgs {
   host: string;
@@ -101,13 +102,14 @@ export default async function create$kernel(
 }
 
 const UUID = UID;
-const Request = CreateRequestState;
-const Response = BasicResponse;
+const Response = OkResponse;
+const makeAppState = CreateAppState;
 export {
+  makeAppState,
   UnhandledReponse,
   NotFound,
   Response, //depricated
-  BasicResponse,
+  OkResponse as BasicResponse,
   EmptyResponse,
   FailedResponse,
   //IHTTP
@@ -127,7 +129,6 @@ export {
   IJob,
   CoreNet,
   TestRegex,
-  Request, //depricated
   RequestState,
   NoResponse,
   UUID,

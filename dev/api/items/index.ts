@@ -1,27 +1,34 @@
-import { AppState, CoreNet, FailedResponse, ICore, IHttp, ISocket, ISub, Response } from "../../../src";
+import {
+  AppState,
+  CoreNet,
+  ICore,
+  IHttp,
+  ISocket,
+  ISub,
+} from "../../../src";
 
-const ihttp = IHttp(async () => {
-  return FailedResponse();
+const ihttp = IHttp(async (_, res) => {
+  return res.failed();
 }, []);
 
 const mobileitems = ISocket(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log("testing ....", body);
-    const res = await CoreNet.select("test").query(":api:users", { id: "" });
-    console.log("response = ", res);
-    return Response({ name: "this is name " });
+    const net = await CoreNet.select("test").query(":api:users", { id: "" });
+    console.log("response = ", net);
+    return res.ok({ name: "this is name " });
   },
-  ["socket.auth"]
+  ["socket.auth"],
 );
 
 const icore = ICore(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log("testing ....", body);
-    const res = await CoreNet.select("test").query(":api:users", { id: "" });
-    console.log("response = ", res);
-    return Response({ name: "this is name " });
+    const net = await CoreNet.select("test").query(":api:users", { id: "" });
+    console.log("response = ", net);
+    return res.ok({ name: "this is name " });
   },
-  ["core.auth"]
+  ["core.auth"],
 );
 
 const channels = [
@@ -33,7 +40,7 @@ const isub = ISub(
     //console.log(channel);
     //console.log("product changed", payload);
   },
-  channels
+  channels,
 );
 
 export { isub, ihttp, mobileitems, icore };

@@ -1,6 +1,6 @@
 import { RouteResponseOpts } from "../handlers/BaseHander";
 import AppResponse from "./lib/AppResponse";
-export default function BasicResponse(
+export default function OkResponse(
   data: Object | string | number | null | boolean,
   opts?: RouteResponseOpts,
 ): AppResponse {
@@ -13,3 +13,5 @@ export default function BasicResponse(
   response.rawData = data;
   return response;
 }
+
+export type OkResponse  = typeof OkResponse;

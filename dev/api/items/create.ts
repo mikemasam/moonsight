@@ -4,29 +4,29 @@ export const loader = IMount(async (a, { path }) => {
   //console.log('loaded ===+++|||>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=> ', path);
 }, []);
 
-export const ihttp = IHttp(async (req) => {
+export const ihttp = IHttp(async (req, res) => {
   console.log(req.params);
   console.log(req.query);
   console.log(req.body);
-  return Response({ body: req.body, name: "this is name " });
+  return res.ok({ body: req.body, name: "this is name " });
 }, []);
 
 export const mobileitems = ISocket(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log("testing ....", body);
-    const res = await CoreNet.select("test").query(":api:users", { id: "" });
-    console.log("response = ", res);
-    return Response({ name: "this is name " });
+    const net = await CoreNet.select("test").query(":api:users", { id: "" });
+    console.log("response = ", net);
+    return res.ok({ name: "this is name " });
   },
   ["socket.auth"]
 );
 
 export const icore = ICore(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log("testing ....", body);
-    const res = await CoreNet.select("test").query(":api:users", { id: "" });
-    console.log("response = ", res);
-    return Response({ name: "this is name " });
+    const net  = await CoreNet.select("test").query(":api:users", { id: "" });
+    console.log("response = ", net);
+    return res.ok({ name: "this is name " });
   },
   ["core.auth"]
 );

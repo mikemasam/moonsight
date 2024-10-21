@@ -4,6 +4,8 @@ import { ParsedUrlQuery } from "querystring";
 import { AppState } from "../lib/AppState";
 import AppResponse from "../responders/lib/AppResponse";
 import z from "zod";
+import { OkResponse } from "../responders/Response";
+import { FailedResponse } from "../responders/FailedResponse";
 
 declare global {
   namespace Express {
@@ -37,7 +39,10 @@ declare module "socket.io-client" {
 export type SocketRequestRaw = Socket;
 
 export type HttpRequest = Request;
-export type HttpResponse = Response;
+export type HttpResponse = Response & {
+  ok: OkResponse,
+  failed: FailedResponse
+};
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;
 
@@ -115,6 +120,8 @@ export type SocketRequest = {
 
 export type SocketResponse = {
   fn?: (arg: any) => void;
+  ok: OkResponse,
+  failed: FailedResponse,
   __locals: {
     hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
     startTime: number;

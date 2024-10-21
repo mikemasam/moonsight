@@ -1,29 +1,32 @@
 import {
-  HttpRequest,
   IHttp,
   IMount,
   ISocket,
   ISocketMount,
-  Response,
   UUID,
 } from "../../src/";
 
-export const ihttp = IHttp(async (req: HttpRequest, res, AppState) => {
-  //console.log("req1");
-  /*
+export const ihttp = IHttp(
+  async (req, res, AppState) => {
+    //console.log("req1");
+    /*
   const lock = await AppState.queue("test");
   console.log("req2");
   if (lock) setTimeout(() => lock.clear(), 5 * 1000);
   */
-  //console.log("req3");
-  return Response({ lock: 1, name: "this is a name" });
-}, []);
+    //console.log("req3");
+    return res.ok({ lock: 1, name: "this is a name" });
+    //return undefined;
+    //return Response({ lock: 1, name: "this is a name" },);
+  },
+  ["core.auth"],
+);
 
 //user, business, device
 export const isocket = ISocket(
-  async ({ socket, body }) => {
+  async ({ socket, body },res) => {
     console.log(body);
-    return Response({ body, name: "this is name " });
+    return res.ok({ body, name: "this is name " });
   },
   ["socket.auth"],
 );

@@ -1,18 +1,18 @@
 import { resolve } from "path";
-import { AppLogger, AppState, ICore, IJob, ISocket, Response } from "../../../src";
+import { AppLogger, AppState, ICore, IJob, ISocket } from "../../../src";
 
 export const isocket = ISocket(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log(":api:users: isocket body", body);
-    return Response({ name: "this is name " });
+    return res.ok({ name: "this is name " });
   },
   ["socket.auth"]
 );
 
 export const icore = ICore(
-  async ({ socket, body }) => {
+  async ({ socket, body }, res) => {
     console.log("users - ", body);
-    return Response({ name: "this is name " });
+    return res.ok({ name: "this is name " });
   },
   ["core.auth"]
 );

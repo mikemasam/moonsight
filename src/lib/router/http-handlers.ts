@@ -18,6 +18,8 @@ import UnhandledReponse from "../../responders/UnhandledReponse";
 import HttpUtils from "../../utils/http";
 import addHook from "./after-hook";
 import AppResponse from "../../responders/lib/AppResponse";
+import OkResponse from "../../responders/Response";
+import FailedResponse from "../../responders/FailedResponse";
 
 export const notFoundRouter = () => {
   const handler = RouteHandler(async () => NotFound(), "/");
@@ -106,6 +108,7 @@ export const addIHttpRoute = async (
     const name = typeof middleware == "string" ? middleware : middleware?.name;
     const md = getContext().net.middlewares.find((m) => m.name == name);
     if (md == null) {
+      console.log(getContext().net.middlewares)
       throw new Error(`[KernelJs] ~ Unknown middleware [${name}] ~ ${stat.location}`);
     }
     const args = typeof middleware == "string" ? {} : middleware;
@@ -135,13 +138,16 @@ type Method = "post" | "get" | "all" | "delete" | "put";
 
 const prepareHttpReq = (attachs: any) => {
   return (req: Request, res: Response, next: () => void) => {
+    const _res = res as HttpResponse;
     logger.byType("debug", "prepare req: ", req.url, ", attachs: ", attachs);
     //const req = _req as HttpRequest;
     //const res = _res as HttpResponse;
-    req.utils = HttpUtils(req, res);
+    _res.ok = OkResponse;
+    _res.failed = FailedResponse;
+    req.utils = HttpUtils(req, _res as HttpResponse);
     req.__type = "ihttp";
     req.locals = {};
-    res.__locals = {
+    _res.__locals = {
       hooks: [],
       startTime: Date.now(),
     };

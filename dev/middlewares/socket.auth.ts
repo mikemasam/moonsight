@@ -1,5 +1,5 @@
 import { FailedResponse } from "../../src";
 
 export default async (ctx, req, res) => {
-  return FailedResponse({ status: 401, message: 'Auth failed' });
+  return res.failed({ status: 401, message: 'Auth failed' });
 }
