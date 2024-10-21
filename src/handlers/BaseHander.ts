@@ -6,6 +6,7 @@ import AppResponse from "../responders/lib/AppResponse";
 import z from "zod";
 import { OkResponse } from "../responders/Response";
 import { FailedResponse } from "../responders/FailedResponse";
+import { RequestState } from "../responders/Request";
 
 declare global {
   namespace Express {
@@ -22,9 +23,7 @@ declare global {
       };
     }
   }
-  namespace Zod {
-
-  }
+  namespace Zod {}
 }
 declare module "socket.io" {
   export interface Socket {
@@ -38,10 +37,13 @@ declare module "socket.io-client" {
 }
 export type SocketRequestRaw = Socket;
 
-export type HttpRequest = Request;
+export type HttpRequest = Request & {
+  state: () => RequestState;
+  appState: () => AppState;
+};
 export type HttpResponse = Response & {
-  ok: OkResponse,
-  failed: FailedResponse
+  ok: OkResponse;
+  failed: FailedResponse;
 };
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;
@@ -116,12 +118,14 @@ export type SocketRequest = {
   method: string;
   body: any;
   __type: string;
+  state: () => RequestState;
+  appState: () => AppState;
 };
 
 export type SocketResponse = {
   fn?: (arg: any) => void;
-  ok: OkResponse,
-  failed: FailedResponse,
+  ok: OkResponse;
+  failed: FailedResponse;
   __locals: {
     hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
     startTime: number;
@@ -202,5 +206,5 @@ export interface AppResponsePayload {
 
 export type QueueOptions = {
   wait: boolean;
-  soft?: boolean
+  soft?: boolean;
 };

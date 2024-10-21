@@ -34,6 +34,7 @@ Kernel({
     exception: true,
     error: true,
     job: true,
+    queue: true,
     app: {
       user: true 
     },

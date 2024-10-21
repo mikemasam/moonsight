@@ -1,5 +1,6 @@
 import { QueueOptions } from "../handlers/BaseHander";
 import { AppContext, getContext } from "./context";
+import events from "./events";
 import logger from "./logger";
 import { getRedisClient, getRedisClientSubscriber } from "./redis";
 
@@ -36,6 +37,11 @@ export default class AppQueue {
           this._queueLockReleased();
         },
       );
+    }else{
+      events.on("deba.core.kernel.exlusive.queue", (message) => {
+          logger.byType("queue", `new message`, message);
+          this._queueLockReleased();
+      })
     }
   }
   async aquire(
@@ -168,7 +174,11 @@ export default class AppQueue {
         timelap = endTime - startTime;
       }
       this.clearExpiredLocal();
-      logger.byType("queue", `queue released`, name, lockId);
+      logger.byType("queue", `local: queue released`, name, lockId);
+      events.emit(
+        "deba.core.kernel.exlusive.queue",
+        JSON.stringify({ lockId, name }),
+      );
       return timelap;
     }
 
@@ -186,7 +196,7 @@ export default class AppQueue {
         .catch((err) => false);
       console.assert(qdl, "[KernelJs] ~ queue failed to release lock");
     }
-    logger.byType("queue", `queue released`, name, lockId);
+    logger.byType("queue", `remote: queue released`, name, lockId);
     await getRedisClient().publish(
       "deba.core.kernel.exlusive.queue",
       JSON.stringify({ lockId, name }),

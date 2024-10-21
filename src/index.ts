@@ -109,7 +109,7 @@ export {
   UnhandledReponse,
   NotFound,
   Response, //depricated
-  OkResponse as BasicResponse,
+  OkResponse,
   EmptyResponse,
   FailedResponse,
   //IHTTP

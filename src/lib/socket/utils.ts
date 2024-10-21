@@ -7,6 +7,8 @@ import {
 } from "../../handlers/BaseHander";
 import OkResponse from "../../responders/Response";
 import FailedResponse from "../../responders/FailedResponse";
+import { RequestState } from "../../responders/Request";
+import { AppState } from "../AppState";
 
 export const makeSocketRequest = (
   socket: SocketRequestRaw | null,
@@ -26,6 +28,8 @@ export const makeSocketRequest = (
     body,
     originalUrl: event,
     ip: _ip,
+    state: () => new RequestState(req),
+    appState: () => new AppState()
   };
   return req;
 };
