@@ -5,6 +5,8 @@ import {
   SocketRequestRaw,
   SocketResponse,
 } from "../../handlers/BaseHander";
+import OkResponse from "../../responders/Response";
+import FailedResponse from "../../responders/FailedResponse";
 
 export const makeSocketRequest = (
   socket: SocketRequestRaw | null,
@@ -29,6 +31,8 @@ export const makeSocketRequest = (
 };
 export const makeSocketResponse = (fn: (content: any) => void) => {
   const res: SocketResponse = {
+    ok: OkResponse,
+    failed: FailedResponse,
     fn,
     __locals: { hooks: [], startTime: 0 },
   };

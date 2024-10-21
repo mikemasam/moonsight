@@ -1,6 +1,6 @@
 {
   "name": "moonsight",
-  "version": "0.1.23",
+  "version": "0.1.25",
   "description": "Web application framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,7 +29,7 @@
     "@types/uuid": "^9.0.2",
     "axios": "^1.2.1",
     "cors": "^2.8.5",
-    "debargs": "^0.1.1",
+    "debargs": "^0.1.5",
     "express": "^4.17.1",
     "redis": "^4.5.1",
     "socket.io": "^4.1.3",

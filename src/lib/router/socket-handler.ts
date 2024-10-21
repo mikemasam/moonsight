@@ -57,8 +57,8 @@ export const addISocketRoute = async (
   if (!isocket.__ihandler)
     throw `[KernelJs] ~ ${stat.fullPath} socket route doesn't return async ISocket handler.`;
   const [handler, middlewares] = isocket(stat);
-  const attachs = [];
-  const attached = [];
+  const attachs: any[] = [];
+  const attached: any[] = [];
   for (const middleware of middlewares) {
     const name = typeof middleware == "string" ? middleware : middleware?.name;
     const md = getContext().net.middlewares.find((m) => m.name == name);
