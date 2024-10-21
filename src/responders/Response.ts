@@ -14,4 +14,7 @@ export default function OkResponse(
   return response;
 }
 
-export type OkResponse  = typeof OkResponse;
+export type OkResponse = (
+  data: Object | string | number | null | boolean,
+  opts?: RouteResponseOpts,
+) => AppResponse;

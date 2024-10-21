@@ -1,3 +1,4 @@
+import './types/express';
 import { SystemEvents, runBackgroundTasks } from "./lib/events";
 import Router from "./lib/router/index";
 import UID from "./lib/universal.identity";

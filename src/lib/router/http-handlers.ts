@@ -137,9 +137,7 @@ export const addIHttpRoute = async (
 type Method = "post" | "get" | "all" | "delete" | "put";
 
 const prepareHttpReq = (attachs: any) => {
-  return (req: Request, res: Response, next: () => void) => {
-    const _res = res as HttpResponse;
-    const _req = req as HttpRequest;
+  return (_req: Request, _res: Response, next: () => void) => {
     _req.state = () => new RequestState(_req);
     _req.appState = () => new AppState();
     logger.byType("debug", "prepare req: ", _req.url, ", attachs: ", attachs);

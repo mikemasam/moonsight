@@ -1,4 +1,4 @@
-import { IHttp, IMount, ISocket, ISocketMount, UUID } from "../../src/";
+import { IHttp, IMount, ISocket, ISocketMount, UUID, z } from "../../src/";
 
 export const ihttp = IHttp(
   async (req, res, AppState) => {

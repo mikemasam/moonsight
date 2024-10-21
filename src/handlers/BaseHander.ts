@@ -8,23 +8,6 @@ import { OkResponse } from "../responders/Response";
 import { FailedResponse } from "../responders/FailedResponse";
 import { RequestState } from "../responders/Request";
 
-declare global {
-  namespace Express {
-    export interface Request {
-      _tmp?: string;
-      locals: { [key: string]: any };
-      utils: HttpRequestUtils;
-      __type: "ihttp";
-    }
-    export interface Response {
-      __locals: {
-        hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
-        startTime: number;
-      };
-    }
-  }
-  namespace Zod {}
-}
 declare module "socket.io" {
   export interface Socket {
     locals: { [key: string]: any };
@@ -37,14 +20,9 @@ declare module "socket.io-client" {
 }
 export type SocketRequestRaw = Socket;
 
-export type HttpRequest = Request & {
-  state: () => RequestState;
-  appState: () => AppState;
-};
-export type HttpResponse = Response & {
-  ok: OkResponse;
-  failed: FailedResponse;
-};
+export interface HttpRequest extends Request {}
+export interface HttpResponse extends Response {}
+
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;
 
