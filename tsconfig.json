@@ -1,7 +1,6 @@
 {
   "include": ["src"],
   "compilerOptions": {
-    "types": ["node", "uuid", "cors"],
     "target": "es2017" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "module": "CommonJs" /* Specify what module code is generated. */,
     "declaration": true,

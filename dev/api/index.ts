@@ -11,11 +11,11 @@ export const ihttp = IHttp(
     const lock = await req.appState().queue("12312313");
     console.log(req.appState().get("temp"));
     setTimeout(async () => {
-      console.log("cleared", lock)
+      console.log("cleared", lock);
       if (!lock) return;
       await lock.clear();
     }, 1000 * 5);
-    return res.ok({ lock: 1, name: "this is a name" });
+    return res.Ok({ lock: 1, name: "this is a name" });
     //return undefined;
     //return Response({ lock: 1, name: "this is a name" },);
   },

@@ -5,9 +5,9 @@ import {
   SocketRequestRaw,
   SocketResponse,
 } from "../../handlers/BaseHander";
-import OkResponse from "../../responders/Response";
+import OkResponse from "../../responders/OkResponse";
 import FailedResponse from "../../responders/FailedResponse";
-import { RequestState } from "../../responders/Request";
+import { RequestState } from "../../responders/RequestState";
 import { AppState } from "../AppState";
 
 export const makeSocketRequest = (

@@ -1,13 +1,15 @@
-import { Request, Response, Router } from "express";
 import { Socket } from "socket.io";
 import { ParsedUrlQuery } from "querystring";
 import { AppState } from "../lib/AppState";
 import AppResponse from "../responders/lib/AppResponse";
 import z from "zod";
-import { OkResponse } from "../responders/Response";
+import { OkResponse } from "../responders/OkResponse";
 import { FailedResponse } from "../responders/FailedResponse";
-import { RequestState } from "../responders/Request";
-
+import { RequestState } from "../responders/RequestState";
+import { Router } from "express";
+import { Request, Response } from "express";
+import express from 'express';
+export { Request, Response };
 declare module "socket.io" {
   export interface Socket {
     locals: { [key: string]: any };
@@ -20,8 +22,43 @@ declare module "socket.io-client" {
 }
 export type SocketRequestRaw = Socket;
 
-export interface HttpRequest extends Request {}
-export interface HttpResponse extends Response {}
+declare global {
+  namespace Express {
+    export interface Request {
+      _tmp?: string;
+      locals: { [key: string]: any };
+      utils: HttpRequestUtils;
+      __type: "ihttp";
+      state: () => RequestState;
+      appState: () => AppState;
+    }
+    export interface Response {
+      Ok: OkResponse;
+      Failed: FailedResponse;
+      __locals: {
+        hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
+        startTime: number;
+      };
+    }
+  }
+}
+
+export interface HttpRequest extends express.Request {
+  _tmp?: string;
+  locals: { [key: string]: any };
+  utils: HttpRequestUtils;
+  __type: "ihttp";
+  state: () => RequestState;
+  appState: () => AppState;
+}
+export interface HttpResponse extends express.Response {
+  Ok: OkResponse;
+  Failed: FailedResponse;
+  __locals: {
+    hooks: ((data: any, status: ResponseStatus) => Promise<void>)[];
+    startTime: number;
+  };
+}
 
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;

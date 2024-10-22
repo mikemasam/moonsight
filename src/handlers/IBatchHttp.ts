@@ -5,10 +5,10 @@ import {
   IMiddlewareConfig,
   RouteStat,
 } from "./BaseHander";
-import { RequestState } from "../responders/Request";
+import { RequestState } from "../responders/RequestState";
 import CreateAppState, { AppState } from "../lib/AppState";
 import FailedResponse from "../responders/FailedResponse";
-import { Response } from "..";
+import OkResponse from "../responders/OkResponse";
 import logger from "../lib/logger";
 import { IHttpConfig } from "./IHttp";
 import { makeAsyncHandler } from "../utils/asyncHander";
@@ -77,7 +77,7 @@ export default function IBatchHttp(
           }
         }
         Promise.all(tasks).then(() =>
-          Response(results).json(log, req, res).http(),
+          OkResponse(results).json(log, req, res).http(),
         );
         getContext().state.count--;
       },

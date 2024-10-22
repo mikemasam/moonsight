@@ -18,9 +18,9 @@ import UnhandledReponse from "../../responders/UnhandledReponse";
 import HttpUtils from "../../utils/http";
 import addHook from "./after-hook";
 import AppResponse from "../../responders/lib/AppResponse";
-import OkResponse from "../../responders/Response";
+import OkResponse from "../../responders/OkResponse";
 import FailedResponse from "../../responders/FailedResponse";
-import CreateRequestState, { RequestState } from "../../responders/Request";
+import CreateRequestState, { RequestState } from "../../responders/RequestState";
 
 export const notFoundRouter = () => {
   const handler = RouteHandler(async () => NotFound(), "/");
@@ -129,6 +129,7 @@ export const addIHttpRoute = async (
   }
   router[m](
     `/${endpoint}`,
+    //@ts-ignore
     prepareHttpReq(attachs),
     attachs as any,
     handler as any,
@@ -137,14 +138,14 @@ export const addIHttpRoute = async (
 type Method = "post" | "get" | "all" | "delete" | "put";
 
 const prepareHttpReq = (attachs: any) => {
-  return (_req: Request, _res: Response, next: () => void) => {
+  return (_req: HttpRequest, _res: HttpResponse, next: () => void) => {
     _req.state = () => new RequestState(_req);
     _req.appState = () => new AppState();
     logger.byType("debug", "prepare req: ", _req.url, ", attachs: ", attachs);
     //const req = _req as HttpRequest;
     //const res = _res as HttpResponse;
-    _res.ok = OkResponse;
-    _res.failed = FailedResponse;
+    _res.Ok = OkResponse;
+    _res.Failed = FailedResponse;
     _req.utils = HttpUtils(_req, _res as HttpResponse);
     _req.__type = "ihttp";
     _req.locals = {};
