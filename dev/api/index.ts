@@ -1,4 +1,5 @@
 import { IHttp, IMount, ISocket, ISocketMount, UUID, z } from "../../src/";
+import '../../src/types'
 
 export const ihttp = IHttp(
   async (req, res, AppState) => {

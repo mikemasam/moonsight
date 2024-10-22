@@ -7,21 +7,9 @@ import { OkResponse } from "../responders/OkResponse";
 import { FailedResponse } from "../responders/FailedResponse";
 import { RequestState } from "../responders/RequestState";
 import { Router } from "express";
-import { Request, Response } from "express";
-import express from 'express';
-export { Request, Response };
-declare module "socket.io" {
-  export interface Socket {
-    locals: { [key: string]: any };
-  }
-}
-declare module "socket.io-client" {
-  export interface Socket {
-    locals: { [key: string]: any };
-  }
-}
+import { Request, Response } from "express-serve-static-core";
 export type SocketRequestRaw = Socket;
-
+/*
 declare global {
   namespace Express {
     export interface Request {
@@ -42,8 +30,9 @@ declare global {
     }
   }
 }
+*/
 
-export interface HttpRequest extends express.Request {
+export interface HttpRequest extends Request {
   _tmp?: string;
   locals: { [key: string]: any };
   utils: HttpRequestUtils;
@@ -51,7 +40,7 @@ export interface HttpRequest extends express.Request {
   state: () => RequestState;
   appState: () => AppState;
 }
-export interface HttpResponse extends express.Response {
+export interface HttpResponse extends Response {
   Ok: OkResponse;
   Failed: FailedResponse;
   __locals: {
@@ -59,7 +48,6 @@ export interface HttpResponse extends express.Response {
     startTime: number;
   };
 }
-
 export type NetRequest = HttpRequest | SocketRequest;
 export type NetResponse = HttpResponse | SocketResponse;
 
@@ -170,7 +158,7 @@ export interface RequestLog {
 
 export interface ResponseLog {
   method: string;
-  ip: string;
+  ip: string | undefined;
   url: string;
   status: number;
   endTime: number;

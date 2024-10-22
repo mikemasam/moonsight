@@ -135,7 +135,7 @@ export {
   AppLogger,
 };
 
-import './types/express';
 export * from "./handlers/BaseHander";
 export type * from "./lib/context";
+export * from "./types"
 
