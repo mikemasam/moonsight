@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { Server } from "socket.io";
+import { Namespace, Server } from "socket.io";
 import { AppContextOpts } from "../context";
 import logger from "../logger";
 

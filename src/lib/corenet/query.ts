@@ -24,9 +24,8 @@ export default class CoreNetQuery {
   async selectQuery<T>(dpath: string, body: Object): Promise<CoreResponse<T>> {
     this.channel = "";
     if (!dpath?.length) return this.query<T>("", body);
-    const matched = [
-      ...dpath.matchAll(/(dapp:\/\/)([a-z\.]*)([:a-z\.\-\/\[\]]*)/g),
-    ][0];
+    const matchs: any = dpath.matchAll(/(dapp:\/\/)([a-z\.]*)([:a-z\.\-\/\[\]]*)/g);
+    const matched = [...matchs][0];
     if (matched.length < 3 || matched[1] != "dapp://")
       return this.query<T>("", body);
     this.channel = matched[2];

@@ -13,7 +13,6 @@ export class AppState {
     return getContext().opts.channelName;
   }
 
-  //dictionary
   get<T>(name: string): T | undefined | null {
     return getContext().opts.settings[name];
   }
@@ -44,6 +43,6 @@ export class AppState {
   }
 }
 
-export default function CreateAppState() {
+export default function CreateAppState(): AppState {
   return new AppState();
 }

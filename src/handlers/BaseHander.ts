@@ -6,8 +6,8 @@ import z from "zod";
 import { OkResponse } from "../responders/OkResponse";
 import { FailedResponse } from "../responders/FailedResponse";
 import { RequestState } from "../responders/RequestState";
-import { Router } from "express";
-import { Request, Response } from "express-serve-static-core";
+import { Request, Response, Router } from "express";
+//import { Request, Response } from "express-serve-static-core";
 export type SocketRequestRaw = Socket;
 /*
 declare global {
@@ -32,7 +32,16 @@ declare global {
 }
 */
 
+export interface ParamsDictionary {
+    [key: string]: string;
+}
 export interface HttpRequest extends Request {
+  body: Record<string, any>;
+  headers: Record<string, any>;
+  header(name: 'set-cookie'): string[] | undefined;
+  header(name: string): string | undefined;
+  query: Record<string, any>;
+  params: ParamsDictionary;
   _tmp?: string;
   locals: { [key: string]: any };
   utils: HttpRequestUtils;
@@ -211,3 +220,15 @@ export type QueueOptions = {
   wait: boolean;
   soft?: boolean;
 };
+
+
+declare module "socket.io" {
+  export interface Socket {
+    locals: { [key: string]: any };
+  }
+}
+declare module "socket.io-client" {
+  export interface Socket {
+    locals: { [key: string]: any };
+  }
+}

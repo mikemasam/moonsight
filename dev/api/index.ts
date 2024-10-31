@@ -1,8 +1,28 @@
-import { IHttp, IMount, ISocket, ISocketMount, UUID, z } from "../../src/";
-import '../../src/types'
+import { IHttp, IMount, ISocket, ISocketMount, TestRegex, UUID, z } from "../../src/";
 
+const schema = z
+  .object({
+    password: z.string(),
+    email: z.string().email(),
+    identity: z.union([
+      z.string().refine(
+        (v) => {
+          let phone = TestRegex.cleanphone(v);
+          if (phone.length == 9) phone = `255${phone}`;
+          return TestRegex.testphone(phone);
+        },
+        { message: "Invalid credentials" },
+      ),
+      z.string().email(),
+    ]),
+  })
+  .partial({ email: true, identity: true })
+  .refine((v) => v.email || v.identity, "Invalid credentials");
 export const ihttp = IHttp(
   async (req, res, AppState) => {
+    //req.bod
+    const body = req.utils.parseBody(schema);
+    //req.header("")
     //console.log("req1");
     /*
   const lock = await AppState.queue("test");
@@ -11,6 +31,7 @@ export const ihttp = IHttp(
   */
     const lock = await req.appState().queue("12312313");
     console.log(req.appState().get("temp"));
+    req.header("hi");
     setTimeout(async () => {
       console.log("cleared", lock);
       if (!lock) return;

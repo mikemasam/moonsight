@@ -10,7 +10,7 @@ export default function HttpUtils(
   req: HttpRequest,
   res: HttpResponse
 ): HttpRequestUtils {
-  function parseBody<T>(schema: z.ZodType<T>): T {
+  function parseBody(schema: z.ZodType) {
     let output = schema.safeParse(req.body);
     if (!output.success) {
       throw fromZodError(output.error).message;
