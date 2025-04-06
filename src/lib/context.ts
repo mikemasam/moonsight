@@ -71,7 +71,7 @@ export default async function createContext(
     apiMiddlewares: opts.apiMiddlewares,
     redis: opts.redis,
     port: opts.port,
-    shutdownTimeout: opts.shutdownTimeout || 30,
+    shutdownTimeout: opts.shutdownTimeout || 10,
     mountCore,
     settings: opts.settings,
     logging: {

@@ -15,6 +15,7 @@ type IQueueLock = {
 export default class AppQueue {
   initialized = false;
   isLocal = false;
+  state_count = 0;
   local: {
     startTime: number;
     name: string;
@@ -37,11 +38,11 @@ export default class AppQueue {
           this._queueLockReleased();
         },
       );
-    }else{
+    } else {
       events.on("deba.core.kernel.exlusive.queue", (message) => {
-          logger.byType("queue", `new message`, message);
-          this._queueLockReleased();
-      })
+        logger.byType("queue", `new message`, message);
+        this._queueLockReleased();
+      });
     }
   }
   async aquire(
@@ -52,7 +53,7 @@ export default class AppQueue {
     if (!Array.isArray(getContext().opts.settings["kernel.exlusive.queue"]))
       getContext().opts.settings["kernel.exlusive.queue"] = [];
     return new Promise(async (resolve) => {
-      const lockId: string = Math.random() + "";
+      const lockId: string = ("L" + Math.random() + "").replace(".", "");
       const startTime = Date.now();
       const aquired = await this._queueAquireLock(name, lockId);
       if (aquired) {
@@ -134,13 +135,16 @@ export default class AppQueue {
       });
       return true;
     }
+    if (getContext().state.shutdown) {
+      return false;
+    }
     const result = await getRedisClient()
       .setNX(name, lockId)
       .catch((err) => {
         logger.byType("queue", `an error occured`, err);
         return false;
       });
-    logger.byType("queue", `aquiring lock ${name} => `, result, lockId);
+    logger.byType("queue", ` *aquiring lock ${name} => `, result, lockId);
     if (result) {
       const qex = await getRedisClient()
         .expire(name, QUEUE_TIMEOUT)
@@ -148,11 +152,16 @@ export default class AppQueue {
       console.assert(qex, "[KernelJs] ~ queue failed to set expire");
       logger.byType("queue", `lock aquired`, name, lockId);
       getContext().state.count++;
+      this.state_count++;
       return true;
     }
     const ttl: number = await getRedisClient()
       .ttl(name)
       .catch((err) => -1);
+    logger.byType(
+      "queue",
+      `aquiring failed, found existing lock ${name} with ttl ${ttl}`,
+    );
     if (!ttl || ttl < 0) {
       await this.keepAlive(name);
       return false;
@@ -162,13 +171,14 @@ export default class AppQueue {
     if (!this.initialized) {
       return 0;
     }
-    getContext().state.count--;
 
     const endTime = Date.now();
     if (this.isLocal) {
       const pos = this.local.findIndex((r) => r.name == name);
       let timelap = -1;
-      if(pos > -1){
+      if (pos > -1) {
+        getContext().state.count--;
+        this.state_count--;
         const startTime = this.local[pos].startTime;
         this.local.splice(pos, 1);
         timelap = endTime - startTime;
@@ -188,15 +198,26 @@ export default class AppQueue {
       .get(name)
       .catch((err) => false);
     if (result == null || result === false) return endTime - startTime;
+
     if (result != lockId) {
       logger.byType("queue", `queue lost lock`);
     } else {
       const qdl = await getRedisClient()
         .del(name)
-        .catch((err) => false);
-      console.assert(qdl, "[KernelJs] ~ queue failed to release lock");
+        .then((r) => [true, r])
+        .catch((err) => [false, err]);
+      console.log(qdl);
+      if (qdl[0] === false) {
+        console.assert(
+          qdl,
+          `[KernelJs] ~ queue failed to release lock ${qdl[1]}`,
+        );
+      } else {
+        logger.byType("queue", `remote: queue released`, name, lockId);
+        getContext().state.count--;
+        this.state_count--;
+      }
     }
-    logger.byType("queue", `remote: queue released`, name, lockId);
     await getRedisClient().publish(
       "deba.core.kernel.exlusive.queue",
       JSON.stringify({ lockId, name }),

@@ -8,12 +8,13 @@ export default function AppCleanup() {
   const dispose = () => {
     for (let i = 0; i < cleanups.length; i++) {
       const cl = cleanups[i];
+      logger.kernel(`[-] cleaning up ${cl.name}`);
       Promise.resolve(cl.action())
         .then(() => {
-          logger.kernel(`cleaning up ${cl.name}`);
+          logger.kernel(`[✓] cleaned up ${cl.name}`);
         })
         .catch((er) => {
-          logger.kernel(`cleaning up ${cl.name} - Error ${er}`);
+          logger.kernel(`[e] clean up ${cl.name} - Error ${er}`);
         });
     }
   };

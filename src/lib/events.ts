@@ -52,7 +52,10 @@ export async function SystemEvents() {
   });
   //TODO: enable state count
   const isAliveCheck = () => {
-    //logger.byType("state", `State Count: ${getContext().state.count}`);
+    logger.byType("state", `State Count: ${getContext().state.count}`);
+    if (getContext().state.shutdown) {
+      logger.byType("state", `Shutdown Timeout: ${getContext().state.timeout}`);
+    }
     if (
       getContext().state.shutdown &&
       (getContext().state.count <= 0 || getContext().state.timeout <= 0)
